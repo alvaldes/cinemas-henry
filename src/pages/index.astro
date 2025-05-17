@@ -3,12 +3,13 @@ import '../styles/global.css';
 import Button from '@/components/Button.astro';
 import MainLayout from '@/layouts/main.astro';
 import TrailerGalery from '@/components/TrailerGallery.astro';
+import NowPlaying from '@/components/NowPlaying.astro';
 ---
 
 <MainLayout content={{ title: 'Henry Cinemas' }}>
   <div class="w-10/12 mx-auto grid">
     <TrailerGalery/>
-    <img src="/favicon.svg" alt="Logo" class="h-48 mt-40" />
+    <NowPlaying/>
     <Button>Tailwind Button in Astro!</Button>
     <a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
   </div>
