@@ -1,0 +1,17 @@
+.mySwiper2 .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+.watchlist-ribbon {
+  position: relative;
+  width: 40px;
+  height: 56px;
+  cursor: pointer;
+}
+
+.plus-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

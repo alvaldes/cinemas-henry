@@ -1,0 +1,150 @@
+---
+import "@/styles/swiper.css";
+
+const videos = [
+  {
+    title: "Superman",
+    description: "Watch the New Trailer",
+    duration: "3:04",
+    image: "https://m.media-amazon.com/images/M/MV5BZmEwNzMyZTQtNDk4Mi00YzI5LWI0MTAtYmYxZjIwZTVlYjgyXkEyXkFqcGdeQXZ3ZXNsZXk@._CR255,36,1536,864_QL75_UX500_CR0,0,500,281_.jpg",
+    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BOGMwZGJiM2EtMzEwZC00YTYzLWIxNzYtMmJmZWNlZjgxZTMwXkEyXkFqcGc@._V1_QL75_UY207_CR13,0,140,207_.jpg",
+    likes: 886,
+    hearts: 463,
+  },
+  {
+    title: "The Old Guard 2",
+    description: "Exclusive Sneak Peek",
+    duration: "2:23",
+    image: "https://m.media-amazon.com/images/M/MV5BYjU3ODRkOGYtMzA5YS00MWU0LWIxYWUtN2EzY2ZlNmYyYTM1XkEyXkFqcGc@._CR20,390,3536,1989_QL75_UX500_CR0,0,500,281_.jpg",
+    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BNTI3MDkzNjctOTY2Ni00ZTJiLWI5N2ItNDI2MzI4MWJlMTMyXkEyXkFqcGc@._V1_QL75_UX140_CR0,0,140,207_.jpg",
+    likes: 654,
+    hearts: 120,
+  },
+  {
+    title: "Deadpool 3",
+    description: "Official Teaser",
+    duration: "1:45",
+    image: "https://m.media-amazon.com/images/M/MV5BMDg0Y2VkYTktYjg1Ny00MjYyLTg3MTctYzk5YjJiNWJjYWRmXkEyXkFqcGc@._CR1061,114,3166,1781_QL75_UX500_CR0,0,500,281_.jpg",
+    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BZjBmZDYyYmQtMzZiZi00NTM0LWE1ZmItMmQ2NGRmNDQxODAwXkEyXkFqcGc@._V1_QL75_UX140_CR0,0,140,207_.jpg",
+    likes: 1024,
+    hearts: 250,
+  },
+  {
+    title: "Superman",
+    description: "Watch the New Trailer",
+    duration: "3:04",
+    image: "https://m.media-amazon.com/images/M/MV5BZmEwNzMyZTQtNDk4Mi00YzI5LWI0MTAtYmYxZjIwZTVlYjgyXkEyXkFqcGdeQXZ3ZXNsZXk@._CR255,36,1536,864_QL75_UX500_CR0,0,500,281_.jpg",
+    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BOGMwZGJiM2EtMzEwZC00YTYzLWIxNzYtMmJmZWNlZjgxZTMwXkEyXkFqcGc@._V1_QL75_UY207_CR13,0,140,207_.jpg",
+    likes: 886,
+    hearts: 463,
+  },
+  {
+    title: "The Old Guard 2",
+    description: "Exclusive Sneak Peek",
+    duration: "2:23",
+    image: "https://m.media-amazon.com/images/M/MV5BYjU3ODRkOGYtMzA5YS00MWU0LWIxYWUtN2EzY2ZlNmYyYTM1XkEyXkFqcGc@._CR20,390,3536,1989_QL75_UX500_CR0,0,500,281_.jpg",
+    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BOGMwZGJiM2EtMzEwZC00YTYzLWIxNzYtMmJmZWNlZjgxZTMwXkEyXkFqcGc@._V1_QL75_UY207_CR13,0,140,207_.jpg",
+    likes: 654,
+    hearts: 120,
+  },
+  {
+    title: "Deadpool 3",
+    description: "Official Teaser",
+    duration: "1:45",
+    image: "https://m.media-amazon.com/images/M/MV5BMDg0Y2VkYTktYjg1Ny00MjYyLTg3MTctYzk5YjJiNWJjYWRmXkEyXkFqcGc@._CR1061,114,3166,1781_QL75_UX500_CR0,0,500,281_.jpg",
+    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BOGMwZGJiM2EtMzEwZC00YTYzLWIxNzYtMmJmZWNlZjgxZTMwXkEyXkFqcGc@._V1_QL75_UY207_CR13,0,140,207_.jpg",
+    likes: 1024,
+    hearts: 250,
+  },
+];
+---
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+
+<section class="container my-8 flex flex-col w-full bg-background text-white">
+  <!-- Main Swiper Slider -->
+  <div class="w-4/5 mx-auto">
+    <swiper-container 
+      navigation="true" 
+      thumbs-swiper=".mySwiper2"
+      space-between="10" 
+      slides-per-view="1" 
+      class="mySwiper"
+      autoplay-delay="2500"
+      autoplay-disable-on-interaction="false"
+    >
+      {videos.map(video => (
+        <swiper-slide>
+          <div class="relative w-full h-auto rounded-lg overflow-hidden">
+            <img src={video.image} alt={video.title} class="w-full h-auto object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-background from-10% via-background/80 via-20% to-transparent to-30% p-4 flex items-end">
+              <div class="flex items-center space-x-4">
+                <div class="relative h-44 overflow-hidden rounded-lg">
+                  <img src={video.bookmarkImage} alt="Poster" class="rounded object-cover" />
+                  <div class="absolute top-0 left-0 w-10 h-auto cursor-pointer opacity-70 hover:opacity-50" role="button" tabindex="0">
+                    <svg width="2.5rem" height="auto" viewBox="0 0 24 34" xmlns="http://www.w3.org/2000/svg">
+                      <polygon fill="#000000" points="24 0 0 0 0 32 12.24 26.29 24 31.77"></polygon>
+                      <polygon fill="transparent" points="24 0 0 0 0 32 12.24 26.29 24 31.77"></polygon>
+                      <polygon fill="#000000" points="24 31.77 24 33.77 12.24 28.29 0 34 0 32 12.24 26.29"></polygon>
+                    </svg>
+                    <div class="absolute top-2.5 flex items-center justify-center w-full">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <button class="text-white border-2 border-white rounded-full p-1 text-xl flex items-center justify-center w-10 h-10">
+                      ▶
+                    </button>
+                    <h2 class="text-xl font-semibold">{video.title}</h2>
+                    <span class="text-sm">{video.duration}</span>
+                  </div>
+                  <p class="text-sm mt-1">{video.description}</p>
+                  <div class="flex space-x-4 mt-2 text-sm">
+                    <span>👍 {video.likes}</span>
+                    <span>💖 {video.hearts}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      ))}
+    </swiper-container>
+  </div>
+
+  <!-- Up Next as Synchronized Thumbnails -->
+  <div class="w-4/5 h-auto mx-auto">
+    <h3 class="text-yellow-500 font-semibold mb-4">Up next</h3>
+    <swiper-container 
+      class="mySwiper2" 
+      direction="horizontal" 
+      slides-per-view="5" 
+      free-mode="true" 
+      watch-slides-progress="true"
+    >
+      {videos.map(video => (
+        <swiper-slide class="opacity-40">
+          <div class="flex items-center space-x-2 cursor-pointer hover:bg-white/10 p-2 rounded">
+            <img src={video.bookmarkImage} class=`object-cover w-12 h-auto flex items-center justify-center rounded`/>
+            <div>
+              <p> ▶ {video.duration}</p>
+              <p class="font-bold text-sm">{video.title}</p>
+              <div class="flex space-x-2 text-xs mt-1">
+                <span>👍 {video.likes}</span>
+                <span>💖 {video.hearts}</span>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      ))}
+    </swiper-container>
+    <button class="mt-4 text-white hover:underline flex items-center space-x-1">
+      <span>Browse trailers</span>
+      <span>➔</span>
+    </button>
+  </div>
+</section>
