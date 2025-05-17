@@ -5,15 +5,18 @@ import { Globe, Instagram, Facebook } from '@lucide/astro';
   <div class="border-neutral-800 border-1 w-full "></div>
   <div class="flex items-center justify-between w-full">
     <!-- Logo -->
-    <img src="images/LogoH.png" alt="Logo" class="w-auto h-24" />
+    <a href="/" aria-label="Logo" class="flex items-center gap-2">
+      <img src="images/LogoH.png" alt="Logo" class="w-auto h-24" />
+    </a>
     <!-- Redes sociales -->
     <div class="border border-gray-800 bg-gray-900 p-4 rounded flex flex-col items-center gap-3">
       <span class="text-sm w-full">Sigue a Henry Cinema en:</span>
 
       <div class="flex items-center gap-3">
         <!-- Página oficial -->
-        <a href="https://www.cinemashenry.com.mx/" target="_blank" rel="noopener noreferrer" aria-label="Sitio Oficial" class="hover:text-gray-200 flex items-center gap-1 bg-gradient-to-tr from-red-800 via-red-600 to-red-500 p-2 rounded-full">
-          <Globe class="w-4 h-4" stroke-width="2.5px"/>
+        <a href="https://www.cinemashenry.com.mx/" target="_blank" rel="noopener noreferrer" aria-label="Sitio Oficial" class="hover:text-gray-200 flex items-center gap-1 bg-gradient-to-tr from-red-900 via-red-900 to-red-700 p-2 rounded-full">
+          <!-- <Globe class="w-4 h-4" stroke-width="2.5px"/> -->
+          <img src="favicon.svg" alt="Logo" class="w-3 h-3" />
           <span class="text-xs font-semibold">Sitio Oficial</span>
         </a>
 
