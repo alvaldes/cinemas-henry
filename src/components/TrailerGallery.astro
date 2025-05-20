@@ -3,26 +3,14 @@ import "@/styles/swiper.css";
 import type { Movie } from "@/lib/types";
 
 const { videos } = Astro.props;
-
-const video = [
-  {
-    title: "Superman",
-    description: "Watch the New Trailer",
-    duration: "3:04",
-    image: "https://m.media-amazon.com/images/M/MV5BZmEwNzMyZTQtNDk4Mi00YzI5LWI0MTAtYmYxZjIwZTVlYjgyXkEyXkFqcGdeQXZ3ZXNsZXk@._CR255,36,1536,864_QL75_UX500_CR0,0,500,281_.jpg",
-    bookmarkImage: "https://m.media-amazon.com/images/M/MV5BOGMwZGJiM2EtMzEwZC00YTYzLWIxNzYtMmJmZWNlZjgxZTMwXkEyXkFqcGc@._V1_QL75_UY207_CR13,0,140,207_.jpg",
-    likes: 886,
-    hearts: 463,
-  },
-];
 ---
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
-<section class="container my-8 flex flex-col w-full bg-background text-white">
+<section class="my-8 mx-auto flex flex-col w-full bg-background text-white">
   <!-- Main Swiper Slider -->
-  <div class="w-4/5 mx-auto">
+  <div class="container mx-auto">
     <swiper-container 
       navigation="false" 
       thumbs-swiper=".mySwiper2"
@@ -37,7 +25,7 @@ const video = [
             autoload
             autopause
             posterquality="maxresdefault"
-            class="z-0 rounded-lg overflow-hidden"
+          class="w-11/12 h-auto mx-auto rounded-lg overflow-hidden"
           ></lite-youtube>
           <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-4 w-full">
             <img
@@ -75,7 +63,7 @@ const video = [
   </div>
 
   <!-- Up Next as Synchronized Thumbnails -->
-  <div class="w-4/5 h-auto mx-auto mt-1">
+  <div class="w-full h-auto mx-auto mt-1">
     <h3 class="text-yellow-500 font-semibold mb-4">Próximos Estrenos</h3>
     <swiper-container 
       class="mySwiper2" 
