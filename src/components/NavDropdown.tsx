@@ -1,35 +1,8 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import IconMap from "./IconMap";
 import IconChevronDown from "./IconChevronDown";
-
-type Cine = {
-  value: string;
-  label: string;
-  url: string;
-};
-
-const defaultCines: Cine[] = [
-  {
-    value: "",
-    label: "Seleccionar cine",
-    url: "",
-  },
-  {
-    value: "Lagos",
-    label: "Lagos",
-    url: "http://cnbxlagos.dyndns.org/",
-  },
-  {
-    value: "Juchitan",
-    label: "Juchitan",
-    url: "http://cnbxjuchitan.dyndns.org/",
-  },
-  {
-    value: "Huajuapan",
-    label: "Huajuapan",
-    url: "http://cnbxhuajuapan.dyndns.org/",
-  },
-];
+import { defaultCines } from "@/lib/constants";
+import type { Cine } from "@/lib/types";
 
 type NavDropdownProps = {
   onSelect?: (cine: Cine) => void;
@@ -39,39 +12,8 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Cine>(defaultCines[0]);
   const [cines, setCines] = useState<Cine[]>(defaultCines);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Fetch cines from API
-  // CORS problem on localhost
-  useEffect(() => {
-    async function fetchCines() {
-      try {
-        const response = await fetch(
-          "https://www.cinemashenry.com.mx/api/complejos/328",
-          {
-            headers: {
-              Accept: "application/json, text/javascript, */*; q=0.01",
-              "X-Requested-With": "XMLHttpRequest",
-            },
-          },
-        );
-        console.log("Response status:", response.status);
-        const data = await response.json();
-        console.log("Fetched cines:", data);
-        const fetchedCines = data.configTv.map((cine: any) => ({
-          value: cine.referencia.toLowerCase().replace(" ", "-"),
-          label: cine.nombre,
-        }));
-        setCines([defaultCines[0], ...fetchedCines]);
-      } catch (error) {
-        console.error("Error fetching cines:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCines();
-  }, []);
 
   // Close dropdown if clicking outside
   useEffect(() => {
@@ -94,6 +36,7 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
   function handleSelect(cine: Cine) {
     setSelected(cine);
     setOpen(false);
+    localStorage.setItem("selectedCine", JSON.stringify(cine));
     if (onSelect) onSelect(cine);
   }
 
@@ -117,23 +60,19 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
           class="absolute left-0 w-full mt-2 bg-gray-900 rounded shadow-lg z-10 border border-gray-700"
           role="listbox"
         >
-          {loading ? (
-            <li class="px-4 py-2 text-gray-400">Cargando...</li>
-          ) : (
-            cines.map((cine) => (
-              <li
-                key={cine.value}
-                class={`px-4 py-2 cursor-pointer hover:bg-red-400 hover:text-black ${
-                  cine.value === selected.value ? "bg-red-400 text-black" : ""
-                }`}
-                role="option"
-                aria-selected={cine.value === selected.value}
-                onClick={() => handleSelect(cine)}
-              >
-                {cine.label}
-              </li>
-            ))
-          )}
+          {cines.map((cine) => (
+            <li
+              key={cine.value}
+              class={`px-4 py-2 cursor-pointer hover:bg-red-400 hover:text-black ${
+                cine.value === selected.value ? "bg-red-400 text-black" : ""
+              }`}
+              role="option"
+              aria-selected={cine.value === selected.value}
+              onClick={() => handleSelect(cine)}
+            >
+              {cine.label}
+            </li>
+          ))}
         </ul>
       )}
     </div>
