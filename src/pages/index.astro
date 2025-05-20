@@ -64,7 +64,6 @@ const upNext: Movie[] = movies.filter((movie: Movie) => {
   const movieDate = parseDate(movie.releaseDate); // Parse the release date
   return normalizeDate(movieDate) > today; // Movies releasing in the future
 });
-console.log(upNext)
 ---
 
 <MainLayout content={{ title: 'Henry Cinemas' }}>

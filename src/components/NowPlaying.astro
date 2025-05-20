@@ -24,7 +24,7 @@ const { movies } = Astro.props;
           <div class="relative">
             <img src={movie.img_primary} alt={movie.title} class="object-cover w-full h-auto" />
           </div>
-          <div class="p-2 h-42 flex flex-col justify-between">
+          <div class="p-2 h-36 flex flex-col justify-between">
             <div class="ml-2">
               <div class="flex items-center text-sm space-x-1 text-yellow-400 font-semibold">
                 <Timer class="h-3.5 w-3.5" />
@@ -32,16 +32,10 @@ const { movies } = Astro.props;
               </div>
               <h3 class="text-sm mt-1 font-medium capitalize">{movie.title}</h3>
             </div>
-            <div class="flex flex-col gap-2">
-              <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-red-200/10 text-sm font-semibold text-red-400 rounded-2xl py-2 cursor-pointer">
-                <Clock class="h-5 w-5 mr-2" />
-                Calendario
-              </button>
-            <a href={movie.trailer} target="_blank" class="flex items-center justify-center gap-1 hover:bg-neutral-800 text-xs text-white rounded-2xl py-2 cursor-pointer">
-                <Play fill="white" class="h-3.5 w-3.5 mr-0" />
-                Trailer
-              </a>
-            </div>
+            <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-white/10 text-sm font-semibold text-white rounded-2xl py-2 cursor-pointer">
+              <Clock class="h-5 w-5 mr-2" />
+              Calendario
+            </button>
           </div>
         </article>
       </swiper-slide>

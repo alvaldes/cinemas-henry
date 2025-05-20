@@ -18,50 +18,54 @@ const video = [
 ---
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
 <section class="container my-8 flex flex-col w-full bg-background text-white">
   <!-- Main Swiper Slider -->
   <div class="w-4/5 mx-auto">
     <swiper-container 
-      navigation="true" 
+      navigation="false" 
       thumbs-swiper=".mySwiper2"
       space-between="10" 
       slides-per-view="1" 
       class="mySwiper"
-      autoplay-delay="3000"
-      autoplay-disable-on-interaction="false"
     >
       {videos.map((video: Movie) => (
         <swiper-slide>
-          <div class="relative h-auto rounded-lg overflow-hidden">
-            <img src={video.img_secondary} alt={video.title} class="h-[40rem] object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-background from-10% via-background/80 via-20% to-transparent to-30% p-4 flex items-end">
-              <div class="flex items-center space-x-4">
-                <div class="relative h-auto overflow-hidden rounded-2xl">
-                  <img src={video.img_primary} alt="Poster" class="rounded object-cover w-auto h-48" />
-                  <div class="absolute top-0 left-0 w-10 h-auto cursor-pointer opacity-70 hover:opacity-50" role="button" tabindex="0">
-                    <svg width="2.5rem" height="auto" viewBox="0 0 24 34" xmlns="http://www.w3.org/2000/svg">
-                      <polygon fill="#000000" points="24 0 0 0 0 32 12.24 26.29 24 31.77"></polygon>
-                      <polygon fill="transparent" points="24 0 0 0 0 32 12.24 26.29 24 31.77"></polygon>
-                      <polygon fill="#000000" points="24 31.77 24 33.77 12.24 28.29 0 34 0 32 12.24 26.29"></polygon>
-                    </svg>
-                    <div class="absolute top-2.5 flex items-center justify-center w-full">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                        <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col">
-                  <div class="flex items-center space-x-2 w-full mb-4 cursor-pointer">
-                    <a href={video.trailer} target="_blank"  class="text-white border-2 border-white rounded-full p-1 text-xl flex items-center justify-center w-10 h-10">
-                      ▶
-                    </a>
-                    <h2 class="text-xl font-semibold capitalize">{video.title}</h2>
-                  </div>
-                  <span class="text-sm">{video.duration} min</span>
-                  <span class="flex space-x-4 mt-2 text-sm">{video.releaseDate}</span>
-                </div>
+          <lite-youtube
+            videoid={video.trailer.split("/").pop()}
+            autoload
+            autopause
+            posterquality="maxresdefault"
+            class="z-0 rounded-lg overflow-hidden"
+          ></lite-youtube>
+          <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-4 w-full">
+            <img
+              src={video.img_primary}
+              alt="Poster"
+              class="rounded object-cover w-auto h-48 pointer-events-none"
+            />
+            <div
+              class="absolute top-4 left-4 w-10 h-auto cursor-pointer opacity-70 hover:opacity-50 rounded-tl-xl overflow-hidden"
+              role="button"
+              tabindex="0"
+            >
+              <svg
+                width="2.5rem"
+                height="auto"
+                viewBox="0 0 24 34"
+                xmlns="http://www.w3.org/2000/svg"
+                >
+                  <polygon fill="#000000" points="24 0 0 0 0 32 12.24 26.29 24 31.77"></polygon>
+                  <polygon fill="transparent" points="24 0 0 0 0 32 12.24 26.29 24 31.77"></polygon>
+                  <polygon fill="#000000" points="24 31.77 24 33.77 12.24 28.29 0 34 0 32 12.24 26.29"></polygon>
+                </svg>
+                <div class="absolute top-2.5 flex items-center justify-center w-full">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path
+                      d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"
+                    />
+                  </svg>
               </div>
             </div>
           </div>
@@ -72,7 +76,7 @@ const video = [
 
   <!-- Up Next as Synchronized Thumbnails -->
   <div class="w-4/5 h-auto mx-auto mt-1">
-    <h3 class="text-yellow-500 font-semibold mb-4">Proximamente</h3>
+    <h3 class="text-yellow-500 font-semibold mb-4">Próximos Estrenos</h3>
     <swiper-container 
       class="mySwiper2" 
       direction="horizontal" 
@@ -82,10 +86,10 @@ const video = [
     >
       {videos.map((video: Movie) => (
         <swiper-slide class="opacity-40">
-          <div class="flex items-center space-x-2 cursor-pointer hover:bg-white/10 p-2 rounded">
+          <div class="flex space-x-2 cursor-pointer hover:bg-white/10 p-2 rounded">
             <img src={video.img_primary} class=`object-cover w-12 h-auto flex items-center justify-center rounded`/>
-            <div>
-              <p> ▶ {video.duration} min</p>
+            <div class="flex flex-col items-start">
+              <p class="text-xs"> ▶ {video.duration} min</p>
               <p class="font-bold text-sm capitalize">{video.title}</p>
             </div>
           </div>
@@ -94,3 +98,10 @@ const video = [
     </swiper-container>
   </div>
 </section>
+
+<style>
+  lite-youtube {
+    /* No Shadow */
+    --lite-youtube-frame-shadow-visible: no;
+  }
+</style>
