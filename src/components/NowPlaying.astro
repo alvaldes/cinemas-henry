@@ -23,7 +23,7 @@ const { movies } = Astro.props;
         <article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
           <div class="relative">
             <a href={`/${encodeURIComponent(movie.title)}`}>
-              <img src={movie.img_primary} alt={movie.title} class="object-cover w-full h-auto" />
+              <img src={movie.img_primary} alt={movie.title} class="object-cover w-full h-auto" transition:name={`poster-${movie.title}`} transition:animate="slide" />
             </a>
             <div class="p-2 h-36 flex flex-col justify-between">
               <div class="ml-2">

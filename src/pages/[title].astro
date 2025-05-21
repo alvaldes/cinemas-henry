@@ -40,7 +40,7 @@ export async function getStaticPaths() {
         <!-- Póster y botón trailer -->
       <div class="flex justify-around items-start gap-14 mr-20">
         <div class="pl-1">
-            <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-96 mb-4" />
+            <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-96 mb-4" transition:name={`poster-${movie.title}`} />
             <div class="flex items-center gap-2 mb-4 pl-2">
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.genre}</span>
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.classification}</span>
