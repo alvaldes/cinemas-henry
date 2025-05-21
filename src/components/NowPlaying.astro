@@ -23,20 +23,20 @@ const { movies } = Astro.props;
         <article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
           <div class="relative">
             <a href={`/${encodeURIComponent(movie.title)}`}>
-              <img src={movie.img_primary} alt={movie.title} class="object-cover w-full h-auto" transition:name={`poster-${movie.title}`} transition:animate="slide" />
+              <img src={movie.img_primary} alt={movie.title} class="object-cover w-full h-auto" transition:name={`poster-${movie.title}`} />
             </a>
-            <div class="p-2 h-36 flex flex-col justify-between">
+            <div class="p-2 h-20 flex flex-col justify-between">
               <div class="ml-2">
                 <div class="flex items-center text-sm space-x-1 text-yellow-400 font-semibold">
                   <Timer class="h-3.5 w-3.5" />
                   <span>{movie.duration} min</span>
                 </div>
                 <h3 class="text-sm mt-1 font-medium capitalize">
-                  <a href={`/${encodeURIComponent(movie.title)}`}>{movie.title}</a>
+                  <a href={`/${encodeURIComponent(movie.title)}`} transition:name={`title-${movie.title}`}>{movie.title}</a>
                 </h3>
               </div>
             </div>
-            <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-white/10 text-sm font-semibold text-white rounded-2xl py-2 cursor-pointer">
+            <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-white/10 text-sm font-semibold text-white rounded-2xl py-2 my-4 mx-auto w-11/12 cursor-pointer">
               <Clock class="h-5 w-5 mr-2" />
               Calendario
             </button>
