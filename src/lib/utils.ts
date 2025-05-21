@@ -21,6 +21,7 @@ export const normalizeDate = (date: Date): Date => {
 
 export async function getMovies(): Promise<Movie[] | undefined> {
   const dominio = cineStore.get().dominio;
+  console.log("------- Dominio ------ ", dominio)
   const today = new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
   const boundary = "----geckoformboundary788b4c0ac5be0fc287a4463037b16f6";
@@ -55,7 +56,6 @@ export async function getMovies(): Promise<Movie[] | undefined> {
   }
   const movies: Movie[] = data?.datos?.map((movie: any) => {
     const images = JSON.parse(movie.peliculas_imagenes);
-    console.log(movie.peliculas_actores)
     return {
         id: movie.peliculas_codigo,
         title: movie.peliculas_nombre.toLowerCase(),

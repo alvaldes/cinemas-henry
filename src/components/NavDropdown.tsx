@@ -3,7 +3,8 @@ import IconMap from "./IconMap";
 import IconChevronDown from "./IconChevronDown";
 import { defaultCines } from "@/lib/constants";
 import type { Cine } from "@/lib/types";
-import { cineStore } from "@/stores/cineStore";
+import { cineStore, setCine } from "@/stores/cineStore";
+import { useStore } from "@nanostores/preact"
 
 type NavDropdownProps = {
   onSelect?: (cine: Cine) => void;
@@ -11,9 +12,7 @@ type NavDropdownProps = {
 
 export default function NavDropdown({ onSelect }: NavDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Cine>(defaultCines[0]);
-  const [cines, setCines] = useState<Cine[]>(defaultCines);
-  const [loading, setLoading] = useState(false);
+  const $cineStore = useStore(cineStore)
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown if clicking outside
@@ -35,9 +34,8 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
   }, [open]);
 
   function handleSelect(cine: Cine) {
-    setSelected(cine);
     setOpen(false);
-    cineStore.set(cine);
+    setCine(cine);
     if (onSelect) onSelect(cine);
   }
 
@@ -51,8 +49,8 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
         onClick={() => setOpen((o) => !o)}
       >
         <IconMap size="20" />
-        <span class={selected.value === "" ? "text-gray-400" : ""}>
-          {selected.label}
+        <span class={$cineStore.value === "" ? "text-gray-400" : ""}>
+          {$cineStore.label}
         </span>
         <IconChevronDown />
       </button>
@@ -61,14 +59,14 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
           class="absolute left-0 w-full mt-2 bg-gray-900 rounded shadow-lg z-10 border border-gray-700"
           role="listbox"
         >
-          {cines.map((cine) => (
+          {defaultCines.map((cine) => (
             <li
               key={cine.value}
               class={`px-4 py-2 cursor-pointer hover:bg-red-400 hover:text-black ${
-                cine.value === selected.value ? "bg-red-400 text-black" : ""
+                cine.value === $cineStore.value ? "bg-red-400 text-black" : ""
               }`}
               role="option"
-              aria-selected={cine.value === selected.value}
+              aria-selected={cine.value === $cineStore.value}
               onClick={() => handleSelect(cine)}
             >
               {cine.label}
