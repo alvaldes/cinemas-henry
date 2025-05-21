@@ -1,0 +1,103 @@
+---
+import MainLayout from '@/layouts/main.astro';
+import { getMovies } from '@/lib/utils';
+import { Bookmark } from '@lucide/astro';
+
+// Obtener el parámetro de la URL
+const { title: string } = Astro.params;
+
+const movies = await getMovies(); // Obtener todas las películas desde el JSON o de la API de Cinemashery
+
+const movie = movies?.find((m) => m.title === string);
+
+if (!movie) {
+  throw new Error("Película no encontrada");
+}
+
+// getStaticPaths for dynamic routes
+export async function getStaticPaths() {
+    const movies = await getMovies(); // Obtener todas las películas desde el JSON o de la API de Cinemashery
+    return movies?.map((movie) => ({
+      params: { title: movie.title },
+      props: { movie },
+    }));
+}
+---
+
+<MainLayout content={{ title: movie.title }}>
+  <section class="container mx-auto text-white overflow-hidden">
+    <div class="relative py-8">
+        <!-- Fondo blur con la imagen -->
+        <div
+        class="absolute inset-0 -z-10 mx-auto mt-14 mb-8 w-8/12 h-auto bg-cover bg-center"
+        style={`background-image: url('${movie.img_primary}'); background-size: cover; background-position: center; filter: blur(16px); brightness(0.5);`}
+        aria-hidden="true"
+        ></div>
+        <!-- Overlay oscuro para mejorar contraste -->
+        <div class="absolute inset-0 bg-background/50 -z-10"></div>
+
+        <h1 class="text-4xl font-bold mb-4 capitalize">{movie.title}</h1>
+        <!-- Póster y botón trailer -->
+      <div class="flex justify-around items-start gap-14 mr-20">
+        <div class="pl-1">
+            <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-96 mb-4" />
+            <div class="flex items-center gap-2 mb-4 pl-2">
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.genre}</span>
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.classification}</span>
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.type}</span>
+            </div>
+            <div class="mb-4 mt-4 flex flex-col gap-4 pl-1">
+                <div class="flex flex-col pl-4 border-l-4 border-yellow-300 rounded">
+                    <span class="text-sm uppercase tracking-wider">Proximamente</span>
+                    <span class="text-sm"> Estreno {movie.releaseDate}</span>
+                </div>
+                <button class="flex items-center bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-3xl justify-center cursor-pointer">
+                    <Bookmark class="h-5 w-5 mr-2" />
+                    <span>Añadir a Favoritos</span>
+                </button>
+            </div>
+        </div>
+        <lite-youtube
+            videoid={movie.trailer.split("/").pop()}
+            autoload
+            autopause
+            posterquality="maxresdefault"
+          class="w-full h-auto mx-auto rounded-lg overflow-hidden"
+          ></lite-youtube>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 ">
+        <div class="">
+          <p class="py-4 border-b border-gray-700 text-pretty">{movie.synopsis.slice(1)}</p>
+          <div class="py-4 border-b border-gray-700 w-full">
+            <span class="font-bold">Director</span>
+            <span class="ml-2 text-blue-400 cursor-pointer">{movie.director}</span>
+          </div>
+          <div class="py-4 border-b border-gray-700 w-full">
+            <span class="font-bold">Reparto</span>
+            <span class="ml-2">
+              {movie.actors.split(',').map(actor => (
+                <span class="text-blue-400 cursor-pointer">{actor.trim()}</span>
+              )).reduce((prev, curr) => [prev, <span class="text-gray-400 mx-1">·</span>, curr])}
+            </span>
+          </div>
+          <div class="py-4">
+            <span class="font-bold">Duración</span>
+            <span class="ml-2">{movie.duration} min</span>
+          </div>
+          
+        </div>
+        <div class="mt-4">
+            <div>
+                <span class="font-bold">Estreno</span>
+                <span class="ml-2">{movie.releaseDate}</span>
+              </div><button class="flex bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            <Bookmark class="h-5 w-5 mr-2" />
+            Añadir a Favoritos
+          </button>
+        </div>
+    </div>
+  </section>
+</MainLayout>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>

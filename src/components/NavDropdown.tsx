@@ -3,6 +3,7 @@ import IconMap from "./IconMap";
 import IconChevronDown from "./IconChevronDown";
 import { defaultCines } from "@/lib/constants";
 import type { Cine } from "@/lib/types";
+import { cineStore } from "@/stores/cineStore";
 
 type NavDropdownProps = {
   onSelect?: (cine: Cine) => void;
@@ -36,7 +37,7 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
   function handleSelect(cine: Cine) {
     setSelected(cine);
     setOpen(false);
-    localStorage.setItem("selectedCine", JSON.stringify(cine));
+    cineStore.set(cine);
     if (onSelect) onSelect(cine);
   }
 
