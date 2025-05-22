@@ -1,12 +1,15 @@
 ---
 import MainLayout from '@/layouts/main.astro';
 import { getMovies } from '@/lib/utils';
-import { Bookmark } from '@lucide/astro';
+import { Bookmark, Clock } from '@lucide/astro';
+import DatePicker from '@/components/DatePicker.astro';
 
 // Obtener el parámetro de la URL
 const { title: string } = Astro.params;
 
-const movies = await getMovies(); // Obtener todas las películas desde el JSON o de la API de Cinemashery
+const date = new Date();
+date.setDate(date.getDate() + 1)
+const movies = await getMovies(date); // Obtener todas las películas desde el JSON o de la API de Cinemashery
 
 const movie = movies?.find((m) => m.title === string);
 
@@ -88,13 +91,29 @@ export async function getStaticPaths() {
           
         </div>
         <div class="mt-4">
-            <div>
-                <span class="font-bold">Estreno</span>
-                <span class="ml-2">{movie.releaseDate}</span>
-              </div><button class="flex bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-            <Bookmark class="h-5 w-5 mr-2" />
-            Añadir a Favoritos
-          </button>
+              <DatePicker initialDate={date}/>
+              <div class="mt-4">
+                {movie.showtimes?.length > 0 ? (
+                  movie.showtimes.map((showtime) => (
+                    <div
+                      class="flex items-center justify-start gap-4 p-2 border-b border-gray-600"
+                    >
+                      <span class="text-sm font-medium flex items-center">
+                        <Clock class="h-5 w-5 mr-2" />
+                        {showtime.hour}
+                        </span>
+                      <span class="text-sm text-blue-400">
+                        {showtime.format}
+                        </span>
+                        <span class="bg-blue-400/10 text-blue-800 border border-blue-900 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">
+                          {showtime.subtitled ? "Subtitulada" : "Doblada"}
+                        </span>
+                    </div>
+                  ))
+                ) : (
+                  <div class="text-sm text-gray-400">No hay funciones disponibles.</div>
+                )}
+              </div>
         </div>
     </div>
   </section>

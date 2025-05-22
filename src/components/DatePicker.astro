@@ -1,0 +1,43 @@
+---
+interface Props {
+  initialDate: Date;
+}
+
+const { initialDate } = Astro.props;
+let selectedDate: string = initialDate.toLocaleDateString('en-CA');
+let error: string | null = null;
+
+// Get yesterday's date in YYYY-MM-DD format
+const today = new Date();
+const formattedToday = today.toLocaleDateString('en-CA');
+
+// Manejar la selección de fecha
+function handleSelect(event: Event) {
+  const target = event.target as HTMLInputElement;
+  selectedDate = target.value;
+  error = null;
+}
+
+// Manejar el envío del formulario
+function handleSubmit(event: Event) {
+  event.preventDefault();
+  console.log('Formulario enviado');
+  if (!selectedDate) {
+    error = 'Debe seleccionar una fecha.';
+    return;
+  }
+  // Aquí puedes procesar la fecha seleccionada
+  console.log('Fecha seleccionada:', selectedDate);
+}
+---
+<form class="space-y-4">
+  <input
+    type="date"
+    id="dob"
+    name="dob"
+    value={selectedDate}
+    min={formattedToday}
+    class="mt-1 px-4 py-2 block w-40 rounded-md border border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+  />
+  {error && <p class="text-red-500 text-sm mt-1">{error}</p>}
+</form>

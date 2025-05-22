@@ -22,6 +22,14 @@ export type Cine = {
   }[];
 };
 
+export type Showtime = {
+  id: string;
+  hour: string;
+  subtitled: boolean;
+  format: string;
+  trasnoche: boolean;
+};
+
 export type Movie = {
   id: string;
   title: string;
@@ -37,4 +45,5 @@ export type Movie = {
   img_primary: string;
   img_secondary?: string;
   releaseDate: string;
+  showtimes: Showtime[];
 };
