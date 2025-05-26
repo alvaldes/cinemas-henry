@@ -7,9 +7,9 @@ import DatePicker from '@/components/DatePicker.astro';
 // Obtener el parámetro de la URL
 const { title: string } = Astro.params;
 
-const date = new Date();
-date.setDate(date.getDate() + 1)
-const movies = await getMovies(date); // Obtener todas las películas desde el JSON o de la API de Cinemashery
+let date = new Date();
+date.setDate(date.getDate() + 1);
+let movies = await getMovies(date); // Obtener todas las películas desde el JSON o de la API de Cinemashery
 
 const movie = movies?.find((m) => m.title === string);
 
@@ -17,7 +17,13 @@ if (!movie) {
   throw new Error("Película no encontrada");
 }
 
-// getStaticPaths for dynamic routes
+// Función para manejar el cambio de fecha
+async function handleDateChange(newDate: Date) {
+  console.log("Nueva fecha seleccionada:", newDate);
+  date = newDate;
+  movies = await getMovies(date); // Actualizar las películas con la nueva fecha
+}
+
 export async function getStaticPaths() {
     const movies = await getMovies(); // Obtener todas las películas desde el JSON o de la API de Cinemashery
     return movies?.map((movie) => ({
@@ -91,7 +97,7 @@ export async function getStaticPaths() {
           
         </div>
         <div class="mt-4">
-              <DatePicker initialDate={date}/>
+              <DatePicker initialDate={date} onDateChange={handleDateChange} />
               <div class="mt-4">
                 {movie.showtimes?.length > 0 ? (
                   movie.showtimes.map((showtime) => (

@@ -1,36 +1,18 @@
 ---
 interface Props {
   initialDate: Date;
+  onDateChange: (newDate: Date) => void; // Nueva propiedad para manejar el cambio de fecha
 }
 
-const { initialDate } = Astro.props;
+const { initialDate, onDateChange } = Astro.props;
 let selectedDate: string = initialDate.toLocaleDateString('en-CA');
 let error: string | null = null;
 
 // Get yesterday's date in YYYY-MM-DD format
 const today = new Date();
 const formattedToday = today.toLocaleDateString('en-CA');
-
-// Manejar la selección de fecha
-function handleSelect(event: Event) {
-  const target = event.target as HTMLInputElement;
-  selectedDate = target.value;
-  error = null;
-}
-
-// Manejar el envío del formulario
-function handleSubmit(event: Event) {
-  event.preventDefault();
-  console.log('Formulario enviado');
-  if (!selectedDate) {
-    error = 'Debe seleccionar una fecha.';
-    return;
-  }
-  // Aquí puedes procesar la fecha seleccionada
-  console.log('Fecha seleccionada:', selectedDate);
-}
 ---
-<form class="space-y-4">
+<form class="space-y-4" data-on-date-change={onDateChange.toString()}>
   <input
     type="date"
     id="dob"
@@ -41,3 +23,26 @@ function handleSubmit(event: Event) {
   />
   {error && <p class="text-red-500 text-sm mt-1">{error}</p>}
 </form>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Encuentra el input de fecha en la página.
+    const dateInput = document.getElementById('dob');
+    const form = document.querySelector('form');
+    const onDateChange = new Function('return ' + form.dataset.onDateChange)();
+
+    if (dateInput) {
+      // Manejar el cambio de fecha.
+      dateInput.addEventListener('change', (event) => {
+        const selectedDate = event.target.value;
+        if (typeof onDateChange === 'function') {
+          onDateChange(new Date(selectedDate)); // Llamar a la función de devolución de llamada con la nueva fecha
+        } else {
+          console.error("onDateChange no está definida o no es una función.");
+        }
+      });
+    } else {
+      console.error("El elemento con id 'dob' no se encontró.");
+    }
+  });
+</script>
