@@ -3,8 +3,6 @@ import IconMap from "./IconMap";
 import IconChevronDown from "./IconChevronDown";
 import { defaultCines } from "@/lib/constants";
 import type { Cine } from "@/lib/types";
-import { cineStore, setCine } from "@/stores/cineStore";
-import { useStore } from "@nanostores/preact"
 
 type NavDropdownProps = {
   onSelect?: (cine: Cine) => void;
@@ -12,8 +10,26 @@ type NavDropdownProps = {
 
 export default function NavDropdown({ onSelect }: NavDropdownProps) {
   const [open, setOpen] = useState(false);
-  const $cineStore = useStore(cineStore)
+  const [cine, setCine] = useState<Cine>(defaultCines[0]);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+ // Set cinema from local storage on component mount
+ useEffect(() => {
+  const savedCine = localStorage.getItem('selectedCine');
+  if (savedCine) {
+    const parsedCine = JSON.parse(savedCine);
+    setCine(parsedCine);
+  }
+}, []);
+
+  // Redirect if the cinema changes and URL doesn't match
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const desiredPath = `/${cine.value}`;
+    if (cine.value !== defaultCines[0].value && currentPath !== desiredPath) {
+      window.location.href = desiredPath;
+    }
+  }, [cine]);
 
   // Close dropdown if clicking outside
   useEffect(() => {
@@ -33,11 +49,16 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
     };
   }, [open]);
 
-  function handleSelect(cine: Cine) {
+  function handleSelect(selected: Cine) {
     setOpen(false);
-    setCine(cine);
-    if (onSelect) onSelect(cine);
-  }
+    if (selected.value == cine.value) return;
+    setCine(selected);
+    // Store the selected cinema in local storage
+    localStorage.setItem('selectedCine', JSON.stringify(selected));
+    // Redirect to the new cinema page
+    window.location.href = `/${selected.value}`;
+    if (onSelect) onSelect(selected);
+}
 
   return (
     <div class="relative" ref={dropdownRef}>
@@ -49,8 +70,8 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
         onClick={() => setOpen((o) => !o)}
       >
         <IconMap size="20" />
-        <span class={$cineStore.value === "" ? "text-gray-400" : ""}>
-          {$cineStore.label}
+        <span class={cine.value === "" ? "text-gray-400" : ""}>
+          {cine.label}
         </span>
         <IconChevronDown />
       </button>
@@ -59,17 +80,17 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
           class="absolute left-0 w-full mt-2 bg-gray-900 rounded shadow-lg z-10 border border-gray-700"
           role="listbox"
         >
-          {defaultCines.map((cine) => (
+          {defaultCines.map((item) => (
             <li
-              key={cine.value}
+              key={item.value}
               class={`px-4 py-2 cursor-pointer hover:bg-red-400 hover:text-black ${
-                cine.value === $cineStore.value ? "bg-red-400 text-black" : ""
+                item.value === cine.value ? "bg-red-400 text-black" : ""
               }`}
               role="option"
-              aria-selected={cine.value === $cineStore.value}
-              onClick={() => handleSelect(cine)}
+              aria-selected={item.value === cine.value}
+              onClick={() => handleSelect(item)}
             >
-              {cine.label}
+              {item.label}
             </li>
           ))}
         </ul>

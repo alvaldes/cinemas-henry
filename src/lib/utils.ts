@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Movie, Showtime } from "./types";
-import { cineStore } from "@/stores/cineStore";
+import { defaultCines } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,29 +19,33 @@ export const normalizeDate = (date: Date): Date => {
   return normalized;
 };
 
-export async function getMovies(date?: Date): Promise<Movie[] | undefined> {
-  const dominio = cineStore.get().dominio;
+export async function getMovies(dominio: string, date?: Date): Promise<Movie[] | undefined> {
+  if (!dominio) dominio = defaultCines[0].dominio;
+  console.log("Dominio: ", dominio);
   const today = date ?? new Date();
   const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-  console.log(formattedDate);
+  console.log("Formatted Date: ", formattedDate);
   const boundary = "----geckoformboundary788b4c0ac5be0fc287a4463037b16f6";
 
-  const response = await fetch(`${dominio}/mobile/consultas/peliculas/PeliculasConFuncionesYHorarios.php`, {
-    method: "POST",
-    headers: {
-      "Accept": "application/json, text/javascript, */*; q=0.01",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Accept-Encoding": "gzip, deflate, br, zstd",
-      "Content-Type": `multipart/form-data; boundary=${boundary}`,
-      "Sec-GPC": "1",
-      "Connection": "keep-alive",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "cross-site",
-      "TE": "trailers",
+  const response = await fetch(
+    `${dominio}/mobile/consultas/peliculas/PeliculasConFuncionesYHorarios.php`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/javascript, */*; q=0.01",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Content-Type": `multipart/form-data; boundary=${boundary}`,
+        "Sec-GPC": "1",
+        Connection: "keep-alive",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        TE: "trailers",
+      },
+      body: `------geckoformboundary788b4c0ac5be0fc287a4463037b16f6\r\nContent-Disposition: form-data; name="fecha"\r\n\r\n${formattedDate}\r\n------geckoformboundary788b4c0ac5be0fc287a4463037b16f6--\r\n`,
     },
-    body: `------geckoformboundary788b4c0ac5be0fc287a4463037b16f6\r\nContent-Disposition: form-data; name="fecha"\r\n\r\n${formattedDate}\r\n------geckoformboundary788b4c0ac5be0fc287a4463037b16f6--\r\n`,
-  });
+  );
 
   if (!response.ok) {
     throw new Error("No se pudo obtener la información de las películas");
@@ -92,7 +96,8 @@ export async function getMovies(date?: Date): Promise<Movie[] | undefined> {
       actors: movie.actores,
       synopsis: movie.peliculas_sinopsis,
       type: movie.peliculas_tipo,
-      img_primary: images.find((img: any) => img.tipo === "primario")?.url ?? "",
+      img_primary:
+        images.find((img: any) => img.tipo === "primario")?.url ?? "",
       img_secondary: images.find((img: any) => img.tipo === "secundario")?.url,
       releaseDate: movie.fecha_estreno,
       showtimes: funcionesMap[id] || [],
@@ -101,3 +106,4 @@ export async function getMovies(date?: Date): Promise<Movie[] | undefined> {
 
   return movies;
 }
+

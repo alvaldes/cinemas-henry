@@ -3,15 +3,26 @@ import MainLayout from '@/layouts/main.astro';
 import { getMovies } from '@/lib/utils';
 import { Bookmark, Clock } from '@lucide/astro';
 import DatePicker from '@/components/DatePicker.astro';
+import type { Movie } from '@/lib/types';
+import { defaultCines } from '@/lib/constants';
 
 // Obtener el parámetro de la URL
-const { title: string } = Astro.params;
+const { cine, peli } = Astro.params;
 
 let date = new Date();
 date.setDate(date.getDate() + 1);
-let movies = await getMovies(date); // Obtener todas las películas desde el JSON o de la API de Cinemashery
-
-const movie = movies?.find((m) => m.title === string);
+console.log(cine)
+let movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json`).then((response) => {
+  if (!response.ok) {
+    throw new Error("Error al obtener las películas");
+  }
+  return response.json();
+}).catch((error) => {
+  console.error("Error fetching movies:", error);
+  return [];
+});
+console.log(movies)
+const movie = movies?.find((m: Movie) => m.id === peli);
 
 if (!movie) {
   throw new Error("Película no encontrada");
@@ -21,15 +32,29 @@ if (!movie) {
 async function handleDateChange(newDate: Date) {
   console.log("Nueva fecha seleccionada:", newDate);
   date = newDate;
-  movies = await getMovies(date); // Actualizar las películas con la nueva fecha
+  movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json?date=${newDate.toISOString().split('T')[0]}`).then((response) => {
+    if (!response.ok) {
+      throw new Error("Error al obtener las películas");
+    }
+    return response.json();
+  }).catch((error) => {
+    console.error("Error fetching movies:", error);
+    return [];
+  })
 }
 
 export async function getStaticPaths() {
-    const movies = await getMovies(); // Obtener todas las películas desde el JSON o de la API de Cinemashery
-    return movies?.map((movie) => ({
-      params: { title: movie.title },
-      props: { movie },
-    }));
+    const paths = [];
+    for (const cine of defaultCines) {
+        const movies = await getMovies(`https://${cine.value}.cinebox.mx`);
+        for (const movie of movies ?? []) {
+            paths.push({
+                params: { cine: cine.value.toLowerCase(), peli: movie.id },
+                props: { movie },
+            });
+        }
+    }
+    return paths;
 }
 ---
 
@@ -45,11 +70,11 @@ export async function getStaticPaths() {
         <!-- Overlay oscuro para mejorar contraste -->
         <div class="absolute inset-0 bg-background/50 -z-10"></div>
 
-        <h1 class="text-4xl font-bold mb-4 capitalize" transition:name={`title-${movie.title}`}>{movie.title}</h1>
+        <h1 class="text-4xl font-bold mb-4 capitalize" transition:name={`title-${movie.id}`}>{movie.id}</h1>
         <!-- Póster y botón trailer -->
       <div class="flex justify-around items-start gap-14 mr-20">
         <div class="pl-1">
-            <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-96 mb-4" transition:name={`poster-${movie.title}`} />
+            <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-96 mb-4" transition:name={`poster-${movie.id}`} />
             <div class="flex items-center gap-2 mb-4 pl-2">
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.genre}</span>
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.classification}</span>
@@ -85,9 +110,9 @@ export async function getStaticPaths() {
           <div class="py-4 border-b border-gray-700 w-full">
             <span class="font-bold">Reparto</span>
             <span class="ml-2">
-              {movie.actors.split(',').map(actor => (
+              {movie.actors.split(',').map((actor: any) => (
                 <span class="text-blue-400 cursor-pointer">{actor.trim()}</span>
-              )).reduce((prev, curr) => [prev, <span class="text-gray-400 mx-1">·</span>, curr])}
+              )).reduce((prev:any, curr:any) => [prev, <span class="text-gray-400 mx-1">·</span>, curr])}
             </span>
           </div>
           <div class="py-4">
@@ -100,7 +125,7 @@ export async function getStaticPaths() {
               <DatePicker initialDate={date} onDateChange={handleDateChange} />
               <div class="mt-4">
                 {movie.showtimes?.length > 0 ? (
-                  movie.showtimes.map((showtime) => (
+                  movie.showtimes.map((showtime:any) => (
                     <div
                       class="flex items-center justify-start gap-4 p-2 border-b border-gray-600"
                     >

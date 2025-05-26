@@ -1,48 +1,18 @@
 ---
-import '../styles/global.css';
-import Button from '@/components/Button.astro';
-import MainLayout from '@/layouts/main.astro';
-import TrailerGallery from '@/components/TrailerGallery.astro';
-import NowPlaying from '@/components/NowPlaying.astro';
-
-import { getMovies, normalizeDate, parseDate } from '@/lib/utils'; // Import your date utility functions
-import type { Movie } from '@/lib/types'
-
-const today = normalizeDate(new Date()); // Normaliza la fecha actual
-
-const movies = await getMovies();
-if (!movies) {
-  throw new Error("Películas no encontradas");
-}
-
-const nowPlaying: Movie[] = movies.filter((movie: Movie) => {
-  const movieDate = parseDate(movie.releaseDate); // Parse the release date
-  return normalizeDate(movieDate) <= today; // Movies released today or earlier
-});
-
-const upNext: Movie[] = movies.filter((movie: Movie) => {
-  const movieDate = parseDate(movie.releaseDate); // Parse the release date
-  return normalizeDate(movieDate) > today; // Movies releasing in the future
-});
 ---
 
-<MainLayout content={{ title: 'Henry Cinemas' }}>
-  <div class="container mx-auto grid">
-  <TrailerGallery videos={upNext} />
-  <NowPlaying movies={nowPlaying} />
-    <!-- <Button>Tailwind Button in Astro!</Button> -->
-    <!-- <a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a> -->
-  </div>
-</MainLayout>
+<h1></h1>
 
 <script>
-	import confetti from 'canvas-confetti';
-	const button = document.body.querySelector('button');
+import { defaultCines } from "@/lib/constants";
 
-	if (button) {
-		button.addEventListener('click', () => confetti());
-	}
+  if (typeof window !== 'undefined') {
+    const selectedCine = JSON.parse(localStorage.getItem('selectedCine') || '');
+    if (selectedCine) {
+      window.location.href = `/${selectedCine.value}`;
+    } else {
+      const defaultCine = defaultCines[0]; // Ensure defaultCines is available here
+      window.location.href = `/${defaultCine.value}`;
+    }
+  }
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
-

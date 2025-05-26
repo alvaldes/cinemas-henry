@@ -1,0 +1,67 @@
+---
+import '@/styles/global.css';
+import Button from '@/components/Button.astro';
+import MainLayout from '@/layouts/main.astro';
+import TrailerGallery from '@/components/TrailerGallery.astro';
+import NowPlaying from '@/components/NowPlaying.astro';
+
+import { normalizeDate, parseDate } from '@/lib/utils'; // Import your date utility functions
+import type { Movie } from '@/lib/types'
+import { defaultCines } from '@/lib/constants';
+
+const { cine } = Astro.params;
+const today = normalizeDate(new Date()); // Normaliza la fecha actual
+
+const movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json`).then((response) => {
+  if (!response.ok) {
+    throw new Error("Error al obtener las películas");
+  }
+  return response.json();
+}).catch((error) => {
+  console.error("Error fetching movies:", error);
+  return [];
+});
+if (!movies) {
+  throw new Error("Películas no encontradas");
+}
+
+const nowPlaying: Movie[] = movies.filter((movie: Movie) => {
+  const movieDate = parseDate(movie.releaseDate); // Parse the release date
+  return normalizeDate(movieDate) <= today; // Movies released today or earlier
+});
+
+const upNext: Movie[] = movies.filter((movie: Movie) => {
+  const movieDate = parseDate(movie.releaseDate); // Parse the release date
+  return normalizeDate(movieDate) > today; // Movies releasing in the future
+});
+
+// TODO: hace falta arreglar el disenno para cuando no hay peliculas por estrenar (upNext.length === 0)
+
+export function getStaticPaths() {
+  return defaultCines
+    .map((item) => ({
+      params: { cine: item.value.toLowerCase() },
+    }))
+}
+---
+
+<MainLayout content={{ title: 'Henry Cinemas' }}>
+  <div class="container mx-auto grid">
+  <TrailerGallery videos={upNext} />
+  <NowPlaying movies={nowPlaying} />
+    <!-- <Button>Tailwind Button in Astro!</Button> -->
+    <!-- <a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a> -->
+  </div>
+</MainLayout>
+
+<script>
+	import confetti from 'canvas-confetti';
+	const button = document.body.querySelector('button');
+
+	if (button) {
+		button.addEventListener('click', () => confetti());
+	}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+

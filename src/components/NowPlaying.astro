@@ -3,6 +3,7 @@ import { Clock, Play, Timer, ChevronRight } from '@lucide/astro';
 import type { Movie } from '@/lib/types';
 
 const { movies } = Astro.props;
+const cine = Astro.url.pathname;
 ---
 <section class="py-6 text-white w-full mx-auto">
   <div class="mb-4">
@@ -22,8 +23,8 @@ const { movies } = Astro.props;
       <swiper-slide class="!w-auto">
         <article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
           <div class="relative">
-            <a href={`/${encodeURIComponent(movie.title)}`}>
-              <img src={movie.img_primary} alt={movie.title} class="object-cover w-full h-auto" transition:name={`poster-${movie.title}`} />
+            <a href={`${cine}/${encodeURIComponent(movie.id)}`}>
+              <img src={movie.img_primary} alt={movie.id} class="object-cover w-full h-auto" transition:name={`poster-${movie.id}`} />
             </a>
             <div class="p-2 h-20 flex flex-col justify-between">
               <div class="ml-2">
@@ -32,7 +33,7 @@ const { movies } = Astro.props;
                   <span>{movie.duration} min</span>
                 </div>
                 <h3 class="text-sm mt-1 font-medium capitalize">
-                  <a href={`/${encodeURIComponent(movie.title)}`} transition:name={`title-${movie.title}`}>{movie.title}</a>
+                  <a href={`${cine}/${encodeURIComponent(movie.id)}`} transition:name={`title-${movie.id}`}>{movie.title}</a>
                 </h3>
               </div>
             </div>

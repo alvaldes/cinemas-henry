@@ -2,32 +2,7 @@ import type { Cine } from "./types";
 
 export const defaultCines: Cine[] = [
   {
-    value: "",
-    label: "Seleccionar cine",
-    nombre: "Henry  Lagos",
-    referencia: "Cinebox Lagos",
-    ip: "cnbxlagos.dyndns.org",
-    dominio: "https://lagos.cinebox.mx",
-    url: "http://cnbxlagos.dyndns.org/",
-    ultracine_id: "4017",
-    latitud: "3.387535",
-    longitud: "-76.536016",
-    localidad: "Cali",
-    provincia: "Valle del Cauca",
-    geofence_notification_radius: "300",
-    geofence_notification_time_refresh: "86400000",
-    ip_privada: null,
-    ip_api_complejo: "http://cnbxlagos.dyndns.org/apicomplejo",
-    notificaciones: [
-      {
-        geofence_notification_tittle: "Los Mejores Estrenos",
-        geofence_notification_message: "¿Vamos al Cine? mira que pelis hay",
-        geofence_notification_imagen: "http://altoverde.cinesdino.com.ar/resources/images/logo.png"
-      }
-    ]
-  },
-  {
-    value: "Lagos",
+    value: "lagos",
     label: "Lagos",
     nombre: "Henry  Lagos",
     referencia: "Cinebox Lagos",
@@ -52,7 +27,7 @@ export const defaultCines: Cine[] = [
     ]
   },
   {
-    value: "Juchitan",
+    value: "juchitan",
     label: "Juchitan",
     nombre: "Henry  Juchitan",
     referencia: "Cinebox Juchitan",
@@ -77,7 +52,7 @@ export const defaultCines: Cine[] = [
     ]
   },
   {
-    value: "Huajuapan",
+    value: "huajuapan",
     label: "Huajuapan",
     nombre: "Henry  Huajuapan",
     referencia: "Cinebox Huajuapan",
