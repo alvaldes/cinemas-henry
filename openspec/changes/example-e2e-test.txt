@@ -1,0 +1,82 @@
+// Example E2E Test File
+// Location: tests/e2e/cinema-selection.spec.ts
+// This file demonstrates how to test full user flows with Playwright
+
+import { test, expect } from '@playwright/test';
+
+test.describe('Cinema Selection Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Navigate to homepage before each test
+    await page.goto('http://localhost:3000');
+  });
+
+  test('should load homepage and display cinema list', async ({ page }) => {
+    // Wait for cinema list to be visible
+    const cinemaList = page.locator('[data-testid="cinema-list"]');
+    await expect(cinemaList).toBeVisible({ timeout: 5000 });
+  });
+
+  test('should display at least one cinema in the list', async ({ page }) => {
+    const cinemaItems = page.locator('[data-testid="cinema-item"]');
+    
+    // Wait for at least one item to be visible
+    await expect(cinemaItems.first()).toBeVisible();
+    
+    const count = await cinemaItems.count();
+    expect(count).toBeGreaterThan(0);
+  });
+
+  test('should navigate to cinema detail page when cinema is clicked', async ({ page }) => {
+    const firstCinema = page.locator('[data-testid="cinema-item"]').first();
+    
+    // Click the first cinema
+    await firstCinema.click();
+    
+    // Verify navigation (URL change)
+    await expect(page).toHaveURL(/.*\/cine\/.+/);
+  });
+
+  test('should display cinema name in detail page', async ({ page }) => {
+    // Get the cinema name from the list
+    const firstCinemaName = await page
+      .locator('[data-testid="cinema-item"]')
+      .first()
+      .locator('[data-testid="cinema-name"]')
+      .textContent();
+
+    // Click to navigate
+    await page.locator('[data-testid="cinema-item"]').first().click();
+
+    // Verify name is displayed in detail page
+    const detailName = page.locator('[data-testid="cinema-detail-name"]');
+    await expect(detailName).toContainText(firstCinemaName || '');
+  });
+});
+
+test.describe('Movie Selection Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Navigate to a cinema detail page
+    await page.goto('http://localhost:3000/cine/example-cinema');
+  });
+
+  test('should display movie list for selected cinema', async ({ page }) => {
+    const movieList = page.locator('[data-testid="movie-list"]');
+    await expect(movieList).toBeVisible({ timeout: 5000 });
+  });
+
+  test('should display at least one movie', async ({ page }) => {
+    const movies = page.locator('[data-testid="movie-item"]');
+    await expect(movies.first()).toBeVisible();
+    
+    const count = await movies.count();
+    expect(count).toBeGreaterThan(0);
+  });
+
+  test('should navigate to movie detail when movie is clicked', async ({ page }) => {
+    const firstMovie = page.locator('[data-testid="movie-item"]').first();
+    await firstMovie.click();
+    
+    // Verify navigation to movie detail page
+    await expect(page).toHaveURL(/.*\/cine\/.+\/.+/);
+  });
+});

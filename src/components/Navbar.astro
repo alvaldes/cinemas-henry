@@ -11,7 +11,7 @@ import NavDropdown from '@/components/NavDropdown.tsx';
 
   {/* Search Input */}
 <div class="flex-1 mx-4">
-  <form class="flex" role="search" on:submit|preventDefault={() => { /* Acá va tu lógica de búsqueda */ }}>
+  <form class="flex" role="search">
     <input
       type="text"
       placeholder="Buscar películas..."
@@ -42,4 +42,13 @@ import NavDropdown from '@/components/NavDropdown.tsx';
     </div>
   </div>
 </nav>
+
+<script>
+  document.addEventListener('cineChange', (event) => {
+    const cineValue = (event as CustomEvent).detail.value;
+    if (cineValue) {
+      window.location.href = `/${cineValue}`;
+    }
+  });
+</script>
 

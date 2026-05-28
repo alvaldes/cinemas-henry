@@ -4,32 +4,23 @@ import IconChevronDown from "./IconChevronDown";
 import { defaultCines } from "@/lib/constants";
 import type { Cine } from "@/lib/types";
 
-type NavDropdownProps = {
-  onSelect?: (cine: Cine) => void;
-};
-
-export default function NavDropdown({ onSelect }: NavDropdownProps) {
+export default function NavDropdown() {
   const [open, setOpen] = useState(false);
   const [cine, setCine] = useState<Cine>(defaultCines[0]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
- // Set cinema from local storage on component mount
- useEffect(() => {
-  const savedCine = localStorage.getItem('selectedCine');
-  if (savedCine) {
-    const parsedCine = JSON.parse(savedCine);
-    setCine(parsedCine);
-  }
-}, []);
-
-  // Redirect if the cinema changes and URL doesn't match
+  // Set cinema from local storage on component mount
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    const desiredPath = `/${cine.value}`;
-    if (cine.value !== defaultCines[0].value && currentPath !== desiredPath) {
-      window.location.href = desiredPath;
+    try {
+      const savedCine = localStorage.getItem('selectedCine');
+      if (savedCine) {
+        const parsedCine = JSON.parse(savedCine);
+        setCine(parsedCine);
+      }
+    } catch (error) {
+      console.error("Error reading from localStorage", error);
     }
-  }, [cine]);
+  }, []);
 
   // Close dropdown if clicking outside
   useEffect(() => {
@@ -51,14 +42,20 @@ export default function NavDropdown({ onSelect }: NavDropdownProps) {
 
   function handleSelect(selected: Cine) {
     setOpen(false);
-    if (selected.value == cine.value) return;
+    if (selected.value === cine.value) return;
     setCine(selected);
-    // Store the selected cinema in local storage
-    localStorage.setItem('selectedCine', JSON.stringify(selected));
-    // Redirect to the new cinema page
-    window.location.href = `/${selected.value}`;
-    if (onSelect) onSelect(selected);
-}
+    try {
+      localStorage.setItem('selectedCine', JSON.stringify(selected));
+    } catch (error) {
+      console.error("Error writing to localStorage", error);
+    }
+    const cineChangeEvent = new CustomEvent('cineChange', {
+      detail: { value: selected.value },
+      bubbles: true,
+      composed: true,
+    });
+    dropdownRef.current?.dispatchEvent(cineChangeEvent);
+  }
 
   return (
     <div class="relative" ref={dropdownRef}>

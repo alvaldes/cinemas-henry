@@ -1,12 +1,11 @@
 ---
 import "@/styles/swiper.css";
 import type { Movie } from "@/lib/types";
+import 'swiper/css';
+import '@justinribeiro/lite-youtube';
 
-const { videos } = Astro.props;
+const { videos } = Astro.props as { videos: Movie[] };
 ---
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
 <section class="my-8 mx-auto flex flex-col w-full bg-background text-white">
   <!-- Main Swiper Slider -->
@@ -93,3 +92,7 @@ const { videos } = Astro.props;
     --lite-youtube-frame-shadow-visible: no;
   }
 </style>
+
+<script>
+  import 'swiper/element/bundle';
+</script>

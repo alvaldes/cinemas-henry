@@ -1,0 +1,52 @@
+strict_tdd: true
+context: |
+  cinemas-henry is an Astro + Preact project with three-layer TDD infrastructure.
+  Unit tests (Vitest) cover src/lib utilities; component tests (Vitest + Testing Library)
+  cover src/components Preact/Astro components; E2E tests (Playwright) cover full flows.
+  All tests use TypeScript and test globals are enabled in vitest.config.ts.
+  No external API calls in unit/component tests; all mocked.
+  Detected test runner: Vitest 4.1.7 with Playwright 1.60.0
+rules:
+  proposal:
+    require_problem_statement: true
+  spec:
+    require_acceptance_criteria: true
+  design:
+    require_tradeoffs: true
+  tasks:
+    protect_review_workload: true
+  apply:
+    test_command: "bun test"
+  verify:
+    test_command: "bun test"
+testing:
+  detected: "2026-05-28"
+  runner:
+    command: "vitest"
+    framework: "vitest"
+  layers:
+    unit: "src/lib/__tests__"
+    component: "src/components/__tests__"
+    e2e: "tests/e2e"
+  commands:
+    unit:
+      - "vitest run src/lib/__tests__"
+    component:
+      - "vitest run src/components/__tests__"
+    e2e:
+      - "playwright test"
+  coverage:
+    command: "vitest run --coverage"
+    commands:
+      - "vitest run --coverage --reporter=text"
+      - "vitest run --coverage --reporter=html"
+quality:
+  lint: ""
+  lint_commands:
+    []
+  typecheck: ""
+  typecheck_commands:
+    []
+  format: ""
+  format_commands:
+    []

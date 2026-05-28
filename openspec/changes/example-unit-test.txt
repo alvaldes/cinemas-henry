@@ -1,0 +1,45 @@
+// Example Unit Test File
+// Location: src/lib/__tests__/utils.test.ts
+// This file demonstrates how to test pure utility functions
+
+import { describe, it, expect } from 'vitest';
+import { cn } from '../utils';
+
+describe('cn() - classname merge utility', () => {
+  describe('happy path', () => {
+    it('should merge multiple class strings', () => {
+      const result = cn('px-2', 'py-4', 'bg-white');
+      expect(result).toBe('px-2 py-4 bg-white');
+    });
+
+    it('should handle conditional classes', () => {
+      const result = cn('px-2', false && 'py-4', true && 'bg-white');
+      expect(result).toBe('px-2 bg-white');
+    });
+
+    it('should merge with undefined and null', () => {
+      const result = cn('px-2', null, undefined, 'py-4');
+      expect(result).toBe('px-2 py-4');
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should return empty string for empty input', () => {
+      const result = cn();
+      expect(result).toBe('');
+    });
+
+    it('should trim whitespace', () => {
+      const result = cn('  px-2  ', '  py-4  ');
+      expect(result.trim()).toBe('px-2 py-4');
+    });
+  });
+
+  describe('Tailwind conflict resolution', () => {
+    it('should handle conflicting size classes', () => {
+      // Depending on implementation, later class may override
+      const result = cn('p-2', 'p-4');
+      expect(result).toContain('p-4'); // or use specific assertion based on implementation
+    });
+  });
+});

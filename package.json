@@ -6,11 +6,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:unit": "vitest run src/lib/__tests__",
+    "test:components": "vitest run src/components/__tests__",
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.6",
     "@astrojs/preact": "^4.0.11",
+    "@justinribeiro/lite-youtube": "^1.8.2",
     "@lucide/astro": "^0.510.0",
     "@tailwindcss/vite": "^4.1.3",
     "@types/canvas-confetti": "^1.9.0",
@@ -20,10 +28,21 @@
     "clsx": "^2.1.1",
     "nanostores": "^1.0.1",
     "preact": "^10.26.6",
+    "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.3"
   },
   "devDependencies": {
-    "tw-animate-css": "^1.2.9"
+    "@playwright/test": "^1.60.0",
+    "@preact/preset-vite": "^2.10.5",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/preact": "^3.2.4",
+    "@testing-library/user-event": "^14.6.1",
+    "@vitest/coverage-v8": "^4.1.7",
+    "@vitest/ui": "^4.1.7",
+    "jsdom": "^29.1.1",
+    "tw-animate-css": "^1.2.9",
+    "vitest": "^4.1.7"
   }
 }

@@ -1,6 +1,7 @@
 ---
 import { Clock, Play, Timer, ChevronRight } from '@lucide/astro';
 import type { Movie } from '@/lib/types';
+import 'swiper/css';
 
 const { movies } = Astro.props;
 const cine = Astro.url.pathname;
@@ -47,5 +48,7 @@ const cine = Astro.url.pathname;
     ))}
   </swiper-container>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+  <script>
+    import 'swiper/element/bundle';
+  </script>
 </section>

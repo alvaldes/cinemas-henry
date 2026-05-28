@@ -1,10 +1,9 @@
 ---
 interface Props {
   initialDate: Date;
-  onDateChange: (newDate: Date) => void; // Nueva propiedad para manejar el cambio de fecha
 }
 
-const { initialDate, onDateChange } = Astro.props;
+const { initialDate } = Astro.props;
 let selectedDate: string = initialDate.toLocaleDateString('en-CA');
 let error: string | null = null;
 
@@ -12,7 +11,7 @@ let error: string | null = null;
 const today = new Date();
 const formattedToday = today.toLocaleDateString('en-CA');
 ---
-<form class="space-y-4" data-on-date-change={onDateChange.toString()}>
+<form class="space-y-4">
   <input
     type="date"
     id="dob"
@@ -24,25 +23,22 @@ const formattedToday = today.toLocaleDateString('en-CA');
   {error && <p class="text-red-500 text-sm mt-1">{error}</p>}
 </form>
 
-<script is:inline>
+<script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Encuentra el input de fecha en la página.
-    const dateInput = document.getElementById('dob');
-    const form = document.querySelector('form');
-    const onDateChange = new Function('return ' + form.dataset.onDateChange)();
+    const dateInput = document.getElementById('dob') as HTMLInputElement;
 
     if (dateInput) {
-      // Manejar el cambio de fecha.
       dateInput.addEventListener('change', (event) => {
-        const selectedDate = event.target.value;
-        if (typeof onDateChange === 'function') {
-          onDateChange(new Date(selectedDate)); // Llamar a la función de devolución de llamada con la nueva fecha
-        } else {
-          console.error("onDateChange no está definida o no es una función.");
-        }
+        const selectedDate = (event.target as HTMLInputElement).value;
+        const dateChangeEvent = new CustomEvent('dateChange', {
+          detail: { date: new Date(selectedDate) },
+          bubbles: true,
+          composed: true,
+        });
+        dateInput.dispatchEvent(dateChangeEvent);
       });
     } else {
-      console.error("El elemento con id 'dob' no se encontró.");
+      console.error("The element with id 'dob' was not found.");
     }
   });
 </script>

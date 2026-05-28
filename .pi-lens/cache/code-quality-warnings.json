@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-05-28T19:27:29.730Z",
+  "scope": "turn_delta",
+  "sessionId": "lens-mppt8ynq-0d9dbf8a",
+  "turnIndex": 40,
+  "projectSeqStart": 0,
+  "projectSeqEnd": 1,
+  "deltaOnly": true,
+  "files": [
+    {
+      "filePath": "/Users/alvaldes/Developer/cinemas-henry/SDD_APPLY_COMPLETE.md",
+      "displayPath": "SDD_APPLY_COMPLETE.md",
+      "fileSeq": 1,
+      "warnings": [
+        {
+          "id": "cq:7dd750690f",
+          "filePath": "/Users/alvaldes/Developer/cinemas-henry/SDD_APPLY_COMPLETE.md",
+          "displayPath": "SDD_APPLY_COMPLETE.md",
+          "severity": "warning",
+          "tool": "pi-lens",
+          "message": "Pi-lens analysis unavailable. Tools for markdown not installed.",
+          "category": "other",
+          "origin": "dispatch"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "warnings": 1,
+    "files": 1,
+    "topRules": [
+      {
+        "rule": "pi-lens",
+        "count": 1
+      }
+    ]
+  }
+}

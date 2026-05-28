@@ -1,0 +1,128 @@
+{
+  "success": true,
+  "issues": [
+    {
+      "type": "file",
+      "name": "coverage/base.css",
+      "file": "coverage/base.css"
+    },
+    {
+      "type": "file",
+      "name": "coverage/block-navigation.js",
+      "file": "coverage/block-navigation.js"
+    },
+    {
+      "type": "file",
+      "name": "coverage/prettify.css",
+      "file": "coverage/prettify.css"
+    },
+    {
+      "type": "file",
+      "name": "coverage/prettify.js",
+      "file": "coverage/prettify.js"
+    },
+    {
+      "type": "file",
+      "name": "coverage/sorter.js",
+      "file": "coverage/sorter.js"
+    },
+    {
+      "type": "file",
+      "name": "tests/fixtures/helpers.ts",
+      "file": "tests/fixtures/helpers.ts"
+    },
+    {
+      "type": "file",
+      "name": "tests/fixtures/mocks/cinemas.ts",
+      "file": "tests/fixtures/mocks/cinemas.ts"
+    },
+    {
+      "type": "file",
+      "name": "tests/fixtures/mocks/movies.ts",
+      "file": "tests/fixtures/mocks/movies.ts"
+    },
+    {
+      "type": "dependency",
+      "name": "@astrojs/mdx",
+      "file": "package.json",
+      "line": 19
+    },
+    {
+      "type": "dependency",
+      "name": "class-variance-authority",
+      "file": "package.json",
+      "line": 27
+    },
+    {
+      "type": "dependency",
+      "name": "nanostores",
+      "file": "package.json",
+      "line": 29
+    }
+  ],
+  "unusedExports": [],
+  "unusedFiles": [
+    {
+      "type": "file",
+      "name": "coverage/base.css",
+      "file": "coverage/base.css"
+    },
+    {
+      "type": "file",
+      "name": "coverage/block-navigation.js",
+      "file": "coverage/block-navigation.js"
+    },
+    {
+      "type": "file",
+      "name": "coverage/prettify.css",
+      "file": "coverage/prettify.css"
+    },
+    {
+      "type": "file",
+      "name": "coverage/prettify.js",
+      "file": "coverage/prettify.js"
+    },
+    {
+      "type": "file",
+      "name": "coverage/sorter.js",
+      "file": "coverage/sorter.js"
+    },
+    {
+      "type": "file",
+      "name": "tests/fixtures/helpers.ts",
+      "file": "tests/fixtures/helpers.ts"
+    },
+    {
+      "type": "file",
+      "name": "tests/fixtures/mocks/cinemas.ts",
+      "file": "tests/fixtures/mocks/cinemas.ts"
+    },
+    {
+      "type": "file",
+      "name": "tests/fixtures/mocks/movies.ts",
+      "file": "tests/fixtures/mocks/movies.ts"
+    }
+  ],
+  "unusedDeps": [
+    {
+      "type": "dependency",
+      "name": "@astrojs/mdx",
+      "file": "package.json",
+      "line": 19
+    },
+    {
+      "type": "dependency",
+      "name": "class-variance-authority",
+      "file": "package.json",
+      "line": 27
+    },
+    {
+      "type": "dependency",
+      "name": "nanostores",
+      "file": "package.json",
+      "line": 29
+    }
+  ],
+  "unlistedDeps": [],
+  "summary": "Found 11 issues"
+}

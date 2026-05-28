@@ -6,56 +6,7 @@ import DatePicker from '@/components/DatePicker.astro';
 import type { Movie } from '@/lib/types';
 import { defaultCines } from '@/lib/constants';
 
-// Obtener el parámetro de la URL
-const { cine, peli } = Astro.params;
-
-let date = new Date();
-date.setDate(date.getDate() + 1);
-console.log(cine)
-let movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json`).then((response) => {
-  if (!response.ok) {
-    throw new Error("Error al obtener las películas");
-  }
-  return response.json();
-}).catch((error) => {
-  console.error("Error fetching movies:", error);
-  return [];
-});
-console.log(movies)
-const movie = movies?.find((m: Movie) => m.id === peli);
-
-if (!movie) {
-  throw new Error("Película no encontrada");
-}
-
-// Función para manejar el cambio de fecha
-async function handleDateChange(newDate: Date) {
-  console.log("Nueva fecha seleccionada:", newDate);
-  date = newDate;
-  movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json?date=${newDate.toISOString().split('T')[0]}`).then((response) => {
-    if (!response.ok) {
-      throw new Error("Error al obtener las películas");
-    }
-    return response.json();
-  }).catch((error) => {
-    console.error("Error fetching movies:", error);
-    return [];
-  })
-}
-
-export async function getStaticPaths() {
-    const paths = [];
-    for (const cine of defaultCines) {
-        const movies = await getMovies(`https://${cine.value}.cinebox.mx`);
-        for (const movie of movies ?? []) {
-            paths.push({
-                params: { cine: cine.value.toLowerCase(), peli: movie.id },
-                props: { movie },
-            });
-        }
-    }
-    return paths;
-}
+const { movie } = Astro.props;
 ---
 
 <MainLayout content={{ title: movie.title }}>
@@ -91,13 +42,10 @@ export async function getStaticPaths() {
                 </button>
             </div>
         </div>
-        <lite-youtube
-            videoid={movie.trailer.split("/").pop()}
-            autoload
-            autopause
-            posterquality="maxresdefault"
-          class="w-full h-auto mx-auto rounded-lg overflow-hidden"
-          ></lite-youtube>
+        <div id="youtube-player" class="w-full h-auto mx-auto rounded-lg overflow-hidden bg-black">
+          {/* YouTube player will be inserted here by the client-side script */}
+        </div>
+        {/* <div id="youtube-player"></div> */}
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 ">
@@ -122,7 +70,7 @@ export async function getStaticPaths() {
           
         </div>
         <div class="mt-4">
-              <DatePicker initialDate={date} onDateChange={handleDateChange} />
+              <DatePicker initialDate={new Date()} />
               <div class="mt-4">
                 {movie.showtimes?.length > 0 ? (
                   movie.showtimes.map((showtime:any) => (
@@ -150,4 +98,12 @@ export async function getStaticPaths() {
   </section>
 </MainLayout>
 
-<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
+<!-- <script define:vars={{ movie }}>
+  import('@justinribeiro/lite-youtube').then(() => {
+    const player = document.createElement('lite-youtube');
+    player.videoId = movie.trailer.split("/").pop();
+    player.classList.add('w-full', 'h-auto', 'mx-auto', 'rounded-lg', 'overflow-hidden');
+    document.getElementById('youtube-player').appendChild(player);
+  });
+</script> -->
+

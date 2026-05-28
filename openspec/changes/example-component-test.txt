@@ -1,0 +1,106 @@
+// Example Component Test File
+// Location: src/components/__tests__/NavDropdown.test.tsx
+// This file demonstrates how to test Preact interactive components
+
+import { render, screen } from '@testing-library/preact';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import NavDropdown from '../NavDropdown';
+
+describe('NavDropdown', () => {
+  const mockItems = [
+    { label: 'Home', href: '/' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' }
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('rendering', () => {
+    it('should render trigger button with label', () => {
+      render(<NavDropdown label="Menu" items={mockItems} />);
+      
+      const trigger = screen.getByRole('button', { name: /menu/i });
+      expect(trigger).toBeInTheDocument();
+    });
+
+    it('should not show menu items initially', () => {
+      render(<NavDropdown label="Menu" items={mockItems} />);
+      
+      expect(screen.queryByText('Home')).not.toBeInTheDocument();
+      expect(screen.queryByText('About')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('user interactions', () => {
+    it('should show menu items when trigger is clicked', async () => {
+      const user = userEvent.setup();
+      render(<NavDropdown label="Menu" items={mockItems} />);
+
+      const trigger = screen.getByRole('button', { name: /menu/i });
+      await user.click(trigger);
+
+      expect(screen.getByText('Home')).toBeInTheDocument();
+      expect(screen.getByText('About')).toBeInTheDocument();
+      expect(screen.getByText('Contact')).toBeInTheDocument();
+    });
+
+    it('should close menu when item is clicked', async () => {
+      const user = userEvent.setup();
+      render(<NavDropdown label="Menu" items={mockItems} />);
+
+      const trigger = screen.getByRole('button', { name: /menu/i });
+      await user.click(trigger);
+
+      const homeLink = screen.getByText('Home');
+      await user.click(homeLink);
+
+      // Menu should be closed; items not visible
+      expect(screen.queryByText('About')).not.toBeInTheDocument();
+    });
+
+    it('should call onSelect callback when item is clicked', async () => {
+      const user = userEvent.setup();
+      const onSelect = vi.fn();
+      const itemsWithCallback = [
+        { ...mockItems[0], onSelect }
+      ];
+
+      render(<NavDropdown label="Menu" items={itemsWithCallback} />);
+
+      const trigger = screen.getByRole('button', { name: /menu/i });
+      await user.click(trigger);
+
+      const homeLink = screen.getByText('Home');
+      await user.click(homeLink);
+
+      expect(onSelect).toHaveBeenCalledWith('/', 'Home');
+    });
+  });
+
+  describe('accessibility', () => {
+    it('should have proper ARIA attributes', () => {
+      render(<NavDropdown label="Menu" items={mockItems} />);
+
+      const trigger = screen.getByRole('button');
+      // Adjust based on component implementation
+      expect(trigger).toHaveAttribute('aria-haspopup', 'true');
+    });
+
+    it('should support keyboard navigation', async () => {
+      const user = userEvent.setup();
+      render(<NavDropdown label="Menu" items={mockItems} />);
+
+      const trigger = screen.getByRole('button');
+      
+      // Open menu with Enter key
+      await user.click(trigger);
+      await user.keyboard('{Enter}');
+
+      // Menu should remain open (or toggle based on implementation)
+      expect(screen.getByText('Home')).toBeInTheDocument();
+    });
+  });
+});
