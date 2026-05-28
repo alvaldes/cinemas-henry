@@ -45,19 +45,19 @@
       "type": "dependency",
       "name": "@astrojs/mdx",
       "file": "package.json",
-      "line": 19
+      "line": 20
     },
     {
       "type": "dependency",
       "name": "class-variance-authority",
       "file": "package.json",
-      "line": 27
+      "line": 28
     },
     {
       "type": "dependency",
       "name": "nanostores",
       "file": "package.json",
-      "line": 29
+      "line": 30
     }
   ],
   "unusedExports": [],
@@ -108,19 +108,19 @@
       "type": "dependency",
       "name": "@astrojs/mdx",
       "file": "package.json",
-      "line": 19
+      "line": 20
     },
     {
       "type": "dependency",
       "name": "class-variance-authority",
       "file": "package.json",
-      "line": 27
+      "line": 28
     },
     {
       "type": "dependency",
       "name": "nanostores",
       "file": "package.json",
-      "line": 29
+      "line": 30
     }
   ],
   "unlistedDeps": [],

@@ -78,14 +78,14 @@
     },
     "vitest.config.ts": {
       "latest": {
-        "commit": "6fa7eaa",
-        "timestamp": "2026-05-28T18:54:45.491Z",
-        "mi": 54.5,
+        "commit": "7accf99",
+        "timestamp": "2026-05-28T19:47:25.829Z",
+        "mi": 55.8,
         "cognitive": 0,
         "nesting": 0,
-        "lines": 51,
+        "lines": 47,
         "maxCyclomatic": 1,
-        "entropy": 4.07
+        "entropy": 3.97
       },
       "history": [
         {
@@ -97,6 +97,16 @@
           "lines": 51,
           "maxCyclomatic": 1,
           "entropy": 4.07
+        },
+        {
+          "commit": "7accf99",
+          "timestamp": "2026-05-28T19:47:25.829Z",
+          "mi": 55.8,
+          "cognitive": 0,
+          "nesting": 0,
+          "lines": 47,
+          "maxCyclomatic": 1,
+          "entropy": 3.97
         }
       ],
       "trend": "stable"
@@ -150,7 +160,32 @@
         }
       ],
       "trend": "stable"
+    },
+    "tests/fixtures/setup.ts": {
+      "latest": {
+        "commit": "7accf99",
+        "timestamp": "2026-05-28T19:55:33.721Z",
+        "mi": 54.6,
+        "cognitive": 2,
+        "nesting": 2,
+        "lines": 47,
+        "maxCyclomatic": 6,
+        "entropy": 5.21
+      },
+      "history": [
+        {
+          "commit": "7accf99",
+          "timestamp": "2026-05-28T19:55:33.721Z",
+          "mi": 54.6,
+          "cognitive": 2,
+          "nesting": 2,
+          "lines": 47,
+          "maxCyclomatic": 6,
+          "entropy": 5.21
+        }
+      ],
+      "trend": "stable"
     }
   },
-  "capturedAt": "2026-05-28T18:59:03.077Z"
+  "capturedAt": "2026-05-28T19:55:38.735Z"
 }
