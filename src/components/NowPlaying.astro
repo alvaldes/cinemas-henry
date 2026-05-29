@@ -4,7 +4,7 @@ import type { Movie } from '@/lib/types';
 import 'swiper/css';
 
 const { movies } = Astro.props;
-const cine = Astro.url.pathname;
+const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
 ---
 <section class="py-6 text-white w-full mx-auto">
   <div class="mb-4">
