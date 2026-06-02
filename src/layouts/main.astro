@@ -20,7 +20,9 @@ import { ClientRouter } from "astro:transitions";
 	</head>
 	<body>
     <Navbar/>
-		<slot />
+    <div class="mx-auto max-w-6xl px-0">
+      <slot />
+    </div>
 	</body>
   <Footer/>
 </html>

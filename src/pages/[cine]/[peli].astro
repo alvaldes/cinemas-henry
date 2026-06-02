@@ -60,7 +60,7 @@ async function handleDateChange(newDate: Date) {
 
 <MainLayout content={{ title: movie.title }}>
   <section class="container mx-auto text-white overflow-hidden">
-    <div class="relative py-8">
+    <div class="relative py-4">
         <!-- Fondo blur con la imagen -->
         <div
         class="absolute inset-0 -z-10 mx-auto mt-14 mb-8 w-8/12 h-auto bg-cover bg-center"
@@ -97,7 +97,7 @@ async function handleDateChange(newDate: Date) {
         {/* <div id="youtube-player"></div> */}
       </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 ">
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] w-full gap-10">
         <div class="">
           <p class="py-4 border-b border-gray-700 text-pretty">{movie.synopsis}</p>
           <div class="py-4 border-b border-gray-700 w-full">

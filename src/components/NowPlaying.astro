@@ -6,7 +6,7 @@ import 'swiper/css';
 const { movies } = Astro.props;
 const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
 ---
-<section class="py-6 text-white w-full mx-auto">
+<section class="py-6 text-white w-6xl mx-auto">
   <div class="mb-4">
     <h2 class="text-lg font-semibold flex items-center cursor-pointer">
       <span class="text-yellow-400 mr-1 text-xl">|</span> En Cines
@@ -17,32 +17,35 @@ const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
   <swiper-container 
     class="mySwiper"
     navigation="true"
-    space-between="15"
+    space-between="40"
     slides-per-view="auto"
   >
     {movies.map((movie: Movie) => (
       <swiper-slide class="!w-auto">
         <article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
-          <div class="relative">
+          <div class="relative group overflow-hidden">
             <a href={`${cine}/${encodeURIComponent(movie.id)}`}>
-              <img src={movie.img_primary} alt={movie.id} class="object-cover w-full h-auto" transition:name={`poster-${movie.id}`} />
-            </a>
-            <div class="p-2 h-20 flex flex-col justify-between">
-              <div class="ml-2">
-                <div class="flex items-center text-sm space-x-1 text-yellow-400 font-semibold">
-                  <Timer class="h-3.5 w-3.5" />
-                  <span>{movie.duration} min</span>
-                </div>
-                <h3 class="text-sm mt-1 font-medium capitalize">
-                  <a href={`${cine}/${encodeURIComponent(movie.id)}`} transition:name={`title-${movie.id}`}>{movie.title}</a>
-                </h3>
+              <img src={movie.img_primary} alt={movie.id} class="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105" transition:name={`poster-${movie.id}`} />
+              <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <span class="text-white font-bold text-lg tracking-wide">Ver Peli</span>
               </div>
-            </div>
-            <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-white/10 text-sm font-semibold text-white rounded-2xl py-2 my-4 mx-auto w-11/12 cursor-pointer">
-              <Clock class="h-5 w-5 mr-2" />
-              Calendario
-            </button>
+            </a>
           </div>
+          <div class="p-2 h-20 flex flex-col justify-between">
+            <div class="ml-2">
+              <div class="flex items-center text-sm space-x-1 text-yellow-400 font-semibold">
+                <Timer class="h-3.5 w-3.5" />
+                <span>{movie.duration} min</span>
+              </div>
+              <h3 class="text-sm mt-1 font-medium capitalize">
+                <a href={`${cine}/${encodeURIComponent(movie.id)}`} transition:name={`title-${movie.id}`}>{movie.title}</a>
+              </h3>
+            </div>
+          </div>
+          <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-white/10 text-sm font-semibold text-white rounded-2xl py-2 my-4 mx-auto w-11/12 cursor-pointer">
+            <Clock class="h-5 w-5 mr-2" />
+            Calendario
+          </button>
         </article>
       </swiper-slide>
     ))}
