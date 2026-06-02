@@ -2,7 +2,6 @@
 import "@/styles/swiper.css";
 import type { Movie } from "@/lib/types";
 import 'swiper/css';
-import '@justinribeiro/lite-youtube';
 
 const { videos } = Astro.props as { videos: Movie[] };
 ---
@@ -95,4 +94,5 @@ const { videos } = Astro.props as { videos: Movie[] };
 
 <script>
   import 'swiper/element/bundle';
+  import '@justinribeiro/lite-youtube';
 </script>

@@ -7,6 +7,11 @@ import type { Movie } from '@/lib/types';
 // Obtener el parámetro de la URL
 const { cine, peli } = Astro.params;
 
+// Guard clause: Ignore requests for static assets (e.g., favicon.svg)
+if (peli?.includes('.')) {
+  return Astro.redirect('/404');
+}
+
 let date = new Date();
 date.setDate(date.getDate() + 1);
 
