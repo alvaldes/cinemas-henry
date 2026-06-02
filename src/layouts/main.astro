@@ -13,6 +13,10 @@ import { ClientRouter } from "astro:transitions";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{content.title}</title>
 		<ClientRouter />
+		<script>
+			// Load lite-youtube once globally to avoid "already defined" errors during View Transitions
+			import('https://esm.sh/@justinribeiro/lite-youtube');
+		</script>
 	</head>
 	<body>
     <Navbar/>

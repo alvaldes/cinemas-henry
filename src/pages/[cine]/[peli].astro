@@ -9,7 +9,7 @@ const { cine, peli } = Astro.params;
 
 // Guard clause: Ignore requests for static assets (e.g., favicon.svg)
 if (peli?.includes('.')) {
-  return Astro.redirect('/404');
+  return new Response(null, { status: 404 });
 }
 
 let date = new Date();
@@ -99,7 +99,7 @@ async function handleDateChange(newDate: Date) {
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 ">
         <div class="">
-          <p class="py-4 border-b border-gray-700 text-pretty">{movie.synopsis.slice(1)}</p>
+          <p class="py-4 border-b border-gray-700 text-pretty">{movie.synopsis}</p>
           <div class="py-4 border-b border-gray-700 w-full">
             <span class="font-bold">Director</span>
             <span class="ml-2 text-blue-400 cursor-pointer">{movie.director}</span>
@@ -147,12 +147,31 @@ async function handleDateChange(newDate: Date) {
   </section>
 </MainLayout>
 
-<!-- <script define:vars={{ movie }}>
-  import('@justinribeiro/lite-youtube').then(() => {
-    const player = document.createElement('lite-youtube');
-    player.videoId = movie.trailer.split("/").pop();
+<script define:vars={{ trailerUrl: movie.trailer }}>
+  // The library is already loaded globally in MainLayout
+  const player = document.createElement('lite-youtube');
+  
+  // Extract video ID from various YouTube URL formats (watch, youtu.be, embed)
+  const videoId = trailerUrl.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/)?embed\/|youtube\.com\/watch\?v=|youtu\.be\/)([^& \n\r?]+)/)?.[1];
+  
+  if (videoId) {
+    player.setAttribute('videoid', videoId);
+    player.setAttribute('autoplay', 'false');
+    player.setAttribute('autopause', 'true');
+    player.setAttribute('posterquality', 'maxresdefault');
     player.classList.add('w-full', 'h-auto', 'mx-auto', 'rounded-lg', 'overflow-hidden');
-    document.getElementById('youtube-player').appendChild(player);
-  });
-</script> -->
+    
+    const container = document.getElementById('youtube-player');
+    if (container) {
+      container.innerHTML = ''; // Clear any existing content
+      container.appendChild(player);
+    }
+  } else {
+    console.error("Could not extract YouTube video ID from URL:", trailerUrl);
+    const container = document.getElementById('youtube-player');
+    if (container) {
+      container.innerHTML = '<p class="text-center text-gray-400 p-4">Trailer no disponible</p>';
+    }
+  }
+</script>
 
