@@ -21,8 +21,8 @@ import { defaultCines } from "@/lib/constants";
     if (selectedCine && selectedCine.value) {
       window.location.href = `/${selectedCine.value}`;
     } else {
-      const defaultCine = defaultCines[0];
-      window.location.href = `/${defaultCine.value}`;
+      const huajuapan = defaultCines.find(c => c.value === 'huajuapan') || defaultCines[0];
+      window.location.href = `/${huajuapan.value}`;
     }
   }
 </script>

@@ -12,7 +12,7 @@ export default function NavDropdown() {
   // Set cinema from local storage on component mount
   useEffect(() => {
     try {
-      const savedCine = localStorage.getItem('selectedCine');
+      const savedCine = localStorage.getItem("selectedCine");
       if (savedCine) {
         const parsedCine = JSON.parse(savedCine);
         setCine(parsedCine);
@@ -45,11 +45,11 @@ export default function NavDropdown() {
     if (selected.value === cine.value) return;
     setCine(selected);
     try {
-      localStorage.setItem('selectedCine', JSON.stringify(selected));
+      localStorage.setItem("selectedCine", JSON.stringify(selected));
     } catch (error) {
       console.error("Error writing to localStorage", error);
     }
-    const cineChangeEvent = new CustomEvent('cineChange', {
+    const cineChangeEvent = new CustomEvent("cineChange", {
       detail: { value: selected.value },
       bubbles: true,
       composed: true,
@@ -77,19 +77,27 @@ export default function NavDropdown() {
           class="absolute left-0 w-full mt-2 bg-gray-900 rounded shadow-lg z-10 border border-gray-700"
           role="listbox"
         >
-          {defaultCines.map((item) => (
-            <li
-              key={item.value}
-              class={`px-4 py-2 cursor-pointer hover:bg-red-400 hover:text-black ${
-                item.value === cine.value ? "bg-red-400 text-black" : ""
-              }`}
-              role="option"
-              aria-selected={item.value === cine.value}
-              onClick={() => handleSelect(item)}
-            >
-              {item.label}
-            </li>
-          ))}
+          {defaultCines.map((item) => {
+            const isDisabled = item.value !== "huajuapan";
+            return (
+              <li
+                key={item.value}
+                class={`px-4 py-2 flex justify-between items-center 
+                        ${item.value === cine.value ? "bg-red-400 text-black" : ""} 
+                        ${isDisabled ? "opacity-50 cursor-not-allowed grayscale" : "cursor-pointer hover:bg-red-400 hover:text-black"}`}
+                role="option"
+                aria-selected={item.value === cine.value}
+                onClick={() => !isDisabled && handleSelect(item)}
+              >
+                <span>{item.label}</span>
+                {isDisabled && (
+                  <span class="text-[8px] uppercase font-bold bg-gray-500 text-white px-1.5 py-0.5 rounded-full ml-2">
+                    Próximamente
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
