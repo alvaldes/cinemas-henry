@@ -24,3 +24,12 @@ pnpm-debug.log*
 .idea/
 # Local Pi runtime state
 .atl/
+.pi-lens/
+
+# Test coverage reports
+coverage/
+
+# Session summaries and temporary artifacts
+PHASE2_*
+SDD_*
+PUSH_READY.md
