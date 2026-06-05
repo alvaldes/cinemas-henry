@@ -24,14 +24,22 @@ if (!moviesResponse.ok) {
 let allMoviesForCine = await moviesResponse.json();
 const movie = allMoviesForCine?.find((m: Movie) => m.id === peli);
 
+// ... (rest of the code)
 if (!movie) {
   // Return a 404 response
   // For example: return Astro.redirect('/404'); or throw new Error("Película no encontrada");
   throw new Error(`Película no encontrada: ${peli} en ${cine}`);
 }
 
+// Check if movie is upcoming
+const releaseDateObj = new Date(movie.releaseDate);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const isUpcoming = releaseDateObj >= today;
+
 // Función para manejar el cambio de fecha (client-side)
 async function handleDateChange(newDate: Date) {
+// ... (rest of the code)
   console.log("Nueva fecha seleccionada:", newDate);
   date = newDate;
   // This fetch happens on the client
@@ -81,10 +89,12 @@ async function handleDateChange(newDate: Date) {
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.type}</span>
             </div>
             <div class="mb-4 mt-4 flex flex-col gap-4 pl-1">
-                <div class="flex flex-col pl-4 border-l-4 border-yellow-300 rounded">
-                    <span class="text-sm uppercase tracking-wider">Proximamente</span>
-                    <span class="text-sm"> Estreno {movie.releaseDate}</span>
-                </div>
+                {isUpcoming && (
+                  <div class="flex flex-col pl-4 border-l-4 border-yellow-300 rounded">
+                      <span class="text-sm uppercase tracking-wider">Proximamente</span>
+                      <span class="text-sm"> Estreno {movie.releaseDate}</span>
+                  </div>
+                )}
                 <button class="flex items-center bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-3xl justify-center cursor-pointer">
                     <Bookmark class="h-5 w-5 mr-2" />
                     <span>Añadir a Favoritos</span>
@@ -100,6 +110,12 @@ async function handleDateChange(newDate: Date) {
     <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] w-full gap-10">
         <div class="">
           <p class="py-4 border-b border-gray-700 text-pretty">{movie.synopsis}</p>
+          {!isUpcoming && (
+            <div class="py-4 border-b border-gray-700 w-full">
+              <span class="font-bold">Estreno </span>
+              <span class="ml-2 text-blue-400 cursor-pointer">{movie.releaseDate}</span>
+            </div>
+          )}
           <div class="py-4 border-b border-gray-700 w-full">
             <span class="font-bold">Director</span>
             <span class="ml-2 text-blue-400 cursor-pointer">{movie.director}</span>
@@ -114,7 +130,7 @@ async function handleDateChange(newDate: Date) {
           </div>
           <div class="py-4">
             <span class="font-bold">Duración</span>
-            <span class="ml-2">{movie.duration} min</span>
+            <span class="ml-2 text-yellow-400">{movie.duration} min</span>
           </div>
           
         </div>
