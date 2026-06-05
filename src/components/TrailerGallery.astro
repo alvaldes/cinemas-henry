@@ -11,7 +11,7 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
 
 <section class="my-8 mx-auto flex flex-col w-full bg-background text-white">
   <!-- Main Swiper Slider -->
-  <div class="w-6xl">
+  <div class="max-w-6xl w-full">
     <swiper-container 
       navigation="false" 
       thumbs-swiper=".mySwiper2"
@@ -71,11 +71,11 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
   <!-- Up Next as Synchronized Thumbnails -->
   <div class="w-full h-auto mx-auto mt-1">
     <h3 class="text-yellow-500 font-semibold mb-4">Próximos Estrenos</h3>
-    <swiper-container 
-      class="mySwiper2" 
-      direction="horizontal" 
-      slides-per-view="5" 
-      free-mode="true" 
+    <swiper-container
+      class="mySwiper2"
+      direction="horizontal"
+      slides-per-view="5"
+      free-mode="true"
       watch-slides-progress="true"
     >
       {videos.map((video: Movie) => (
