@@ -37,32 +37,6 @@ const releaseDateObj = parseDate(movie.releaseDate);
 const today = normalizeDate(new Date());
 const isUpcoming = normalizeDate(releaseDateObj) > today;
 
-// Función para manejar el cambio de fecha (client-side)
-async function handleDateChange(newDate: Date) {
-// ... (rest of the code)
-  console.log("Nueva fecha seleccionada:", newDate);
-  date = newDate;
-  // This fetch happens on the client
-  const response = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json?date=${newDate.toISOString().split('T')[0]}`);
-  if (!response.ok) {
-    console.error("Error al obtener las películas para la nueva fecha");
-    // Optionally, update UI to show error
-    return;
-  }
-  const updatedMovies = await response.json();
-  // Here you would typically update a client-side store or reactive variable
-  // to re-render the part of the page showing showtimes.
-  // For now, just logging it.
-  console.log("Películas actualizadas:", updatedMovies);
-  // This assignment won't automatically re-render Astro components,
-  // this part of the logic would need client-side JavaScript framework
-  // or custom script to update the DOM if showtimes are displayed directly from `movie.showtimes`.
-  // However, the DatePicker component itself might handle its own state and updates.
-  // The current structure re-fetches all movies for the cine and would need to find the current 'movie' again.
-  // For the purpose of this SSR conversion, we assume this client-side logic
-  // is handled correctly by DatePicker or other client scripts.
-}
-
 // getStaticPaths has been removed to enable SSR.
 ---
 
@@ -136,7 +110,7 @@ async function handleDateChange(newDate: Date) {
         </div>
         <div class="mt-4">
               <DatePicker initialDate={new Date()} />
-              <div class="mt-4">
+              <div class="mt-4" id="showtimes-container">
                 {movie.showtimes?.length > 0 ? (
                   movie.showtimes.map((showtime:any) => (
                     <div
@@ -166,17 +140,17 @@ async function handleDateChange(newDate: Date) {
 <script define:vars={{ trailerUrl: movie.trailer }}>
   // The library is already loaded globally in MainLayout
   const player = document.createElement('lite-youtube');
-  
+
   // Extract video ID from various YouTube URL formats (watch, youtu.be, embed)
   const videoId = trailerUrl.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/)?embed\/|youtube\.com\/watch\?v=|youtu\.be\/)([^& \n\r?]+)/)?.[1];
-  
+
   if (videoId) {
     player.setAttribute('videoid', videoId);
     player.setAttribute('autoplay', 'false');
     player.setAttribute('autopause', 'true');
     player.setAttribute('posterquality', 'maxresdefault');
     player.classList.add('w-full', 'h-auto', 'mx-auto', 'rounded-lg', 'overflow-hidden');
-    
+
     const container = document.getElementById('youtube-player');
     if (container) {
       container.innerHTML = ''; // Clear any existing content
@@ -189,5 +163,55 @@ async function handleDateChange(newDate: Date) {
       container.innerHTML = '<p class="text-center text-gray-400 p-4">Trailer no disponible</p>';
     }
   }
+</script>
+
+<script define:vars={{ cine, peliId: movie.id }}>
+  // Listen for date changes from the DatePicker
+  document.addEventListener('dateChange', async (event) => {
+    const newDate = event.detail.date;
+    const dateStr = newDate.toISOString().split('T')[0];
+
+    try {
+      const response = await fetch(`/api/peliculas/${cine}.json?date=${dateStr}`);
+      if (!response.ok) {
+        console.error("Error fetching movies for new date");
+        return;
+      }
+
+      const updatedMovies = await response.json();
+      const updatedMovie = updatedMovies?.find((m) => m.id === peliId);
+
+      if (!updatedMovie) {
+        console.error("Movie not found in response");
+        return;
+      }
+
+      const showtimesContainer = document.getElementById('showtimes-container');
+      if (!showtimesContainer) return;
+
+      // Re-render showtimes
+      if (updatedMovie.showtimes && updatedMovie.showtimes.length > 0) {
+        showtimesContainer.innerHTML = updatedMovie.showtimes.map((showtime) => `
+          <div class="flex items-center justify-start gap-4 p-2 border-b border-gray-600">
+            <span class="text-sm font-medium flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 mr-2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              ${showtime.hour}
+            </span>
+            <span class="text-sm text-blue-400">${showtime.format}</span>
+            <span class="bg-blue-400/10 text-blue-800 border border-blue-900 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">
+              ${showtime.subtitled ? "Subtitulada" : "Doblada"}
+            </span>
+          </div>
+        `).join('');
+      } else {
+        showtimesContainer.innerHTML = '<div class="text-sm text-gray-400">No hay funciones disponibles.</div>';
+      }
+    } catch (error) {
+      console.error("Error updating showtimes:", error);
+    }
+  });
 </script>
 

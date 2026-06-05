@@ -24,21 +24,21 @@ const formattedToday = today.toLocaleDateString('en-CA');
 </form>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const dateInput = document.getElementById('dob') as HTMLInputElement;
+  const dateInput = document.getElementById('dob');
 
-    if (dateInput) {
-      dateInput.addEventListener('change', (event) => {
-        const selectedDate = (event.target as HTMLInputElement).value;
-        const dateChangeEvent = new CustomEvent('dateChange', {
-          detail: { date: new Date(selectedDate) },
-          bubbles: true,
-          composed: true,
-        });
-        dateInput.dispatchEvent(dateChangeEvent);
+  if (dateInput) {
+    dateInput.addEventListener('change', (event) => {
+      const target = event.target;
+      const selectedDate = target.value;
+      const dateChangeEvent = new CustomEvent('dateChange', {
+        detail: { date: new Date(selectedDate) },
+        bubbles: true,
+        composed: true,
       });
-    } else {
-      console.error("The element with id 'dob' was not found.");
-    }
-  });
+      // Dispatch on document so any listener can catch it
+      document.dispatchEvent(dateChangeEvent);
+    });
+  } else {
+    console.error("The element with id 'dob' was not found.");
+  }
 </script>
