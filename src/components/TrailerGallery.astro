@@ -2,6 +2,7 @@
 import "@/styles/swiper.css";
 import type { Movie } from "@/lib/types";
 import { Expand } from '@lucide/astro';
+import { formatDuration } from '@/lib/utils';
 import 'swiper/css';
 
 const { videos } = Astro.props as { videos: Movie[] };
@@ -82,7 +83,7 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
           <div class="flex space-x-2 cursor-pointer hover:bg-white/10 p-2 rounded">
             <img src={video.img_primary} class=`object-cover w-12 h-auto flex items-center justify-center rounded`/>
             <div class="flex flex-col items-start">
-              <p class="text-xs"> ▶ {video.duration} min</p>
+              <p class="text-xs"> ▶ {formatDuration(video.duration)}</p>
               <p class="font-bold text-sm capitalize">{video.title}</p>
             </div>
           </div>

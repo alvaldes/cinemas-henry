@@ -19,6 +19,19 @@ export const normalizeDate = (date: Date): Date => {
 	return normalized;
 };
 
+// Format duration in minutes to "Xh Ymin" format
+export const formatDuration = (minutes: number | string): string => {
+	const totalMinutes = Number(minutes);
+	if (isNaN(totalMinutes) || totalMinutes <= 0) return "";
+
+	const hours = Math.floor(totalMinutes / 60);
+	const mins = totalMinutes % 60;
+
+	if (hours === 0) return `${mins} min`;
+	if (mins === 0) return `${hours}h`;
+	return `${hours}h ${mins}min`;
+};
+
 export async function getMovies(
 	dominio: string,
 	date?: Date,

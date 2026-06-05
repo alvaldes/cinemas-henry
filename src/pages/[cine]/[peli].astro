@@ -3,7 +3,7 @@ import MainLayout from '@/layouts/main.astro';
 import { Bookmark, Clock } from '@lucide/astro';
 import DatePicker from '@/components/DatePicker.astro';
 import type { Movie } from '@/lib/types';
-import { parseDate, normalizeDate } from '@/lib/utils';
+import { parseDate, normalizeDate, formatDuration } from '@/lib/utils';
 
 // Obtener el parámetro de la URL
 const { cine, peli } = Astro.params;
@@ -104,7 +104,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
           </div>
           <div class="py-4">
             <span class="font-bold">Duración</span>
-            <span class="ml-2 text-yellow-400">{movie.duration} min</span>
+            <span class="ml-2 text-yellow-400">{formatDuration(movie.duration)}</span>
           </div>
           
         </div>
