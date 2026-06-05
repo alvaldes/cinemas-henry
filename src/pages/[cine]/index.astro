@@ -7,7 +7,8 @@ import NowPlaying from '@/components/NowPlaying.astro';
 
 import { normalizeDate, parseDate } from '@/lib/utils'; // Import your date utility functions
 import type { Movie } from '@/lib/types'
-import { defaultCines } from '@/lib/constants';
+
+export const prerender = false;
 
 const { cine } = Astro.params;
 const today = normalizeDate(new Date()); // Normaliza la fecha actual
@@ -36,13 +37,6 @@ const upNext: Movie[] = movies.filter((movie: Movie) => {
 });
 
 // TODO: hace falta arreglar el disenno para cuando no hay peliculas por estrenar (upNext.length === 0)
-
-export function getStaticPaths() {
-  return defaultCines
-    .map((item) => ({
-      params: { cine: item.value.toLowerCase() },
-    }))
-}
 ---
 
 <MainLayout content={{ title: 'Henry Cinemas' }}>

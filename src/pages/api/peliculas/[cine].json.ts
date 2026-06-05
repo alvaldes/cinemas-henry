@@ -2,6 +2,8 @@ import type { APIRoute } from "astro";
 import { getMovies } from "@/lib/utils";
 import { defaultCines } from "@/lib/constants";
 
+export const prerender = false;
+
 export const GET: APIRoute = async ({ params, request }) => {
   const { cine } = params;
   const date = new URL(request.url).searchParams.get('date');
@@ -13,10 +15,3 @@ export const GET: APIRoute = async ({ params, request }) => {
   const movies = await getMovies(dominio);
   return new Response(movies ? JSON.stringify(movies) : "[]");
 };
-
-export function getStaticPaths() {
-  return defaultCines
-    .map((item) => ({
-      params: { cine: item.value.toLowerCase() },
-    }))
-}
