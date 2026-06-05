@@ -1,5 +1,5 @@
 ---
-import { Bookmark, Clock, Search } from '@lucide/astro';
+import { Menu, X, Bookmark, Clock, Search } from '@lucide/astro';
 import NavDropdown from '@/components/NavDropdown.tsx';
 ---
 <nav class="m-auto bg-gray-900/50 text-white">
@@ -9,8 +9,8 @@ import NavDropdown from '@/components/NavDropdown.tsx';
     <img src="/images/LogoH.webp" alt="Logo" class="h-8 w-auto mr-4" />
   </a>
 
-  {/* Search Input */}
-<div class="flex-1 mx-4">
+  {/* Search Input (desktop) */}
+<div class="hidden md:block flex-1 mx-4">
   <form class="flex" role="search">
     <input
       type="text"
@@ -28,8 +28,8 @@ import NavDropdown from '@/components/NavDropdown.tsx';
   </form>
 </div>
 
-  {/* Enlaces */}
-    <div class="flex items-center space-x-6">
+  {/* Enlaces (desktop) */}
+    <div class="hidden md:flex items-center space-x-6">
       <a href="/watchlist" class="flex items-center hover:text-red-400">
         <Bookmark class="h-5 w-5 mr-2" />
         Favoritos
@@ -39,6 +39,52 @@ import NavDropdown from '@/components/NavDropdown.tsx';
         Cartelera
       </a>
     <NavDropdown client:load />
+    </div>
+
+  {/* Hamburger (mobile) */}
+    <button
+      id="menu-toggle"
+      type="button"
+      class="md:hidden p-2 text-white hover:text-red-400"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <Menu id="icon-menu" class="h-6 w-6" />
+      <X id="icon-close" class="h-6 w-6 hidden" />
+    </button>
+  </div>
+
+  {/* Mobile menu */}
+  <div
+    id="mobile-menu"
+    class="hidden md:hidden border-t border-gray-800 bg-gray-900/50"
+  >
+    <div class="container mx-auto flex flex-col gap-4 py-4">
+      <form class="flex" role="search">
+        <input
+          type="text"
+          placeholder="Buscar películas..."
+          class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
+          aria-label="Search movies"
+        />
+        <button
+          type="submit"
+          class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
+          aria-label="Buscar"
+        >
+          <Search class="h-5 w-5" />
+        </button>
+      </form>
+      <a href="/watchlist" class="flex items-center hover:text-red-400">
+        <Bookmark class="h-5 w-5 mr-2" />
+        Favoritos
+      </a>
+      <a href="/showtimes" class="flex items-center hover:text-red-400">
+        <Clock class="h-5 w-5 mr-2" />
+        Cartelera
+      </a>
+      <NavDropdown client:load />
     </div>
   </div>
 </nav>
@@ -52,3 +98,20 @@ import NavDropdown from '@/components/NavDropdown.tsx';
   });
 </script>
 
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const iconMenu = document.getElementById('icon-menu');
+  const iconClose = document.getElementById('icon-close');
+
+  if (toggle && menu && iconMenu && iconClose) {
+    toggle.addEventListener('click', () => {
+      const isOpen = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden');
+      iconMenu.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      toggle.setAttribute('aria-label', isOpen ? 'Abrir menú' : 'Cerrar menú');
+    });
+  }
+</script>
