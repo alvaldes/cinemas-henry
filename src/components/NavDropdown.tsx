@@ -61,7 +61,7 @@ export default function NavDropdown() {
     <div class="relative" ref={dropdownRef}>
       <button
         type="button"
-        class="flex justify-between items-center w-52 bg-gray-800 text-white rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-400"
+        class="flex justify-between items-center w-full sm:w-52 bg-gray-800 text-white rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-red-400"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}

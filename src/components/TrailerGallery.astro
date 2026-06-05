@@ -74,9 +74,10 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
     <swiper-container
       class="mySwiper2"
       direction="horizontal"
-      slides-per-view="5"
+      slides-per-view="2.5"
       free-mode="true"
       watch-slides-progress="true"
+      breakpoints='{"640": {"slidesPerView": 3.5}, "768": {"slidesPerView": 5}}'
     >
       {videos.map((video: Movie) => (
         <swiper-slide class="opacity-40">

@@ -18,7 +18,7 @@ const formattedToday = today.toLocaleDateString('en-CA');
     name="dob"
     value={selectedDate}
     min={formattedToday}
-    class="mt-1 px-4 py-2 block w-40 rounded-md border border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    class="mt-1 px-4 py-2 block w-full sm:w-40 rounded-md border border-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
   />
   {error && <p class="text-red-500 text-sm mt-1">{error}</p>}
 </form>
