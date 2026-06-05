@@ -1,5 +1,5 @@
 ---
-import { Clock, Play, Timer, ChevronRight } from '@lucide/astro';
+import { Clock, Play, Timer, ChevronRight, Expand } from '@lucide/astro';
 import type { Movie } from '@/lib/types';
 import 'swiper/css';
 
@@ -27,7 +27,7 @@ const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
             <a href={`${cine}/${encodeURIComponent(movie.id)}`}>
               <img src={movie.img_primary} alt={movie.id} class="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105" transition:name={`poster-${movie.id}`} />
               <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span class="text-white font-bold text-lg tracking-wide">Ver Peli</span>
+                <Expand class="h-8 w-8 text-white" />
               </div>
             </a>
           </div>
