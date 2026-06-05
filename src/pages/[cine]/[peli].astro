@@ -3,6 +3,7 @@ import MainLayout from '@/layouts/main.astro';
 import { Bookmark, Clock } from '@lucide/astro';
 import DatePicker from '@/components/DatePicker.astro';
 import type { Movie } from '@/lib/types';
+import { parseDate, normalizeDate } from '@/lib/utils';
 
 // Obtener el parámetro de la URL
 const { cine, peli } = Astro.params;
@@ -32,10 +33,9 @@ if (!movie) {
 }
 
 // Check if movie is upcoming
-const releaseDateObj = new Date(movie.releaseDate);
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-const isUpcoming = releaseDateObj >= today;
+const releaseDateObj = parseDate(movie.releaseDate);
+const today = normalizeDate(new Date());
+const isUpcoming = normalizeDate(releaseDateObj) > today;
 
 // Función para manejar el cambio de fecha (client-side)
 async function handleDateChange(newDate: Date) {
