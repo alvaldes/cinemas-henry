@@ -59,11 +59,12 @@ import NavDropdown from '@/components/NavDropdown.tsx';
   <div
     id="mobile-menu"
     class="hidden fixed inset-0 z-50 md:hidden"
+    style="min-height: 100vh; min-height: 100dvh;"
     role="dialog"
     aria-modal="true"
     aria-labelledby="mobile-menu-title"
   >
-    {/* Backdrop covers everything; click closes the modal */}
+    {/* Backdrop covers everything (fills the dvh parent); click closes the modal */}
     <button
       id="mobile-menu-backdrop"
       type="button"
@@ -71,9 +72,9 @@ import NavDropdown from '@/components/NavDropdown.tsx';
       aria-label="Cerrar menú"
     ></button>
 
-    {/* Content panel: positioned just below the navbar, auto-sized */}
+    {/* Content panel: positioned just below the navbar, auto-sized to dynamic viewport */}
     <div
-      class="absolute top-16 left-4 right-4 max-h-[calc(100vh-5rem)] overflow-y-auto bg-gray-900 text-white rounded-lg shadow-xl border border-gray-800"
+      class="absolute top-16 left-4 right-4 max-h-[calc(100dvh-5rem)] overflow-y-auto bg-gray-900 text-white rounded-lg shadow-xl border border-gray-800"
     >
       <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
         <h2 id="mobile-menu-title" class="text-lg font-semibold">Menú</h2>
