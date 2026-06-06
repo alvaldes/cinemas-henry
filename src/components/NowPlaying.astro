@@ -7,7 +7,7 @@ import 'swiper/css';
 const { movies } = Astro.props;
 const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
 ---
-<section class="py-6 text-white max-w-6xl mx-auto px-4 md:px-6">
+<section class="py-6 text-white max-w-dvw w-full mr-2">
   <div class="mb-4">
     <h2 class="text-lg font-semibold flex items-center cursor-pointer">
       <span class="text-yellow-400 mr-1 text-xl">|</span> En Cines
@@ -16,9 +16,9 @@ const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
   </div>
 
   <swiper-container 
-    class="mySwiper"
+    class="mySwiper max-w-dvw w-11/12"
     navigation="true"
-    space-between="40"
+    space-between="20"
     slides-per-view="auto"
   >
     {movies.map((movie: Movie) => (

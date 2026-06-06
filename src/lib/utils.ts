@@ -32,6 +32,15 @@ export const formatDuration = (minutes: number | string): string => {
 	return `${hours}h ${mins}min`;
 };
 
+// Capitalize the first letter of each word (like CSS text-transform: capitalize)
+export const titleCase = (str: string): string => {
+	return str
+		.toLowerCase()
+		.split(" ")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+};
+
 export async function getMovies(
 	dominio: string,
 	date?: Date,

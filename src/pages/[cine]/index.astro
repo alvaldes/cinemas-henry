@@ -41,10 +41,8 @@ const upNext: Movie[] = movies.filter((movie: Movie) => {
 
 <MainLayout content={{ title: 'Henry Cinemas' }}>
   <div class="container mx-auto grid">
-  <TrailerGallery videos={upNext} />
-  <NowPlaying movies={nowPlaying} />
-    <!-- <Button>Tailwind Button in Astro!</Button> -->
-    <!-- <a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a> -->
+    <TrailerGallery videos={upNext} />
+    <NowPlaying movies={nowPlaying} />
   </div>
 </MainLayout>
 

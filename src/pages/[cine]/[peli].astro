@@ -3,7 +3,7 @@ import MainLayout from '@/layouts/main.astro';
 import { Bookmark, Clock } from '@lucide/astro';
 import DatePicker from '@/components/DatePicker.astro';
 import type { Movie } from '@/lib/types';
-import { parseDate, normalizeDate, formatDuration } from '@/lib/utils';
+import { parseDate, normalizeDate, formatDuration, titleCase } from '@/lib/utils';
 
 // Obtener el parámetro de la URL
 const { cine, peli } = Astro.params;
@@ -40,7 +40,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
 // getStaticPaths has been removed to enable SSR.
 ---
 
-<MainLayout content={{ title: movie.title }}>
+<MainLayout content={{ title: titleCase(movie.title) }}>
   <section class="container mx-auto text-white overflow-hidden">
     <div class="relative py-4">
         <!-- Fondo blur con la imagen -->
@@ -54,10 +54,11 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
 
         <h1 class="text-2xl md:text-4xl font-bold mb-4 capitalize" transition:name={`title-${movie.id}`}>{movie.title}</h1> <!-- Changed movie.id to movie.title for better display -->
         <!-- Póster y botón trailer -->
-      <div class="flex flex-col md:flex-row md:justify-around md:items-start gap-4 md:gap-14">
-        <div class="pl-1">
-            <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-full max-w-xs md:max-w-none md:w-96 mb-4" transition:name={`poster-${movie.id}`} />
-            <div class="flex flex-wrap items-center gap-2 mb-4 pl-2">
+      <div class="flex flex-col-reverse md:flex-row md:justify-around md:items-start gap-6 md:gap-4 lg:gap-14">
+        <div class="flex flex-row md:flex-col pl-1 gap-4 md:gap-0">
+          <img src={movie.img_primary} alt={movie.title} class="rounded-lg shadow-lg w-2/6 md:w-4/5 lg:w-64 ax-w-xs md:max-w-none mb-4 mx-auto" transition:name={`poster-${movie.id}`} />
+          <div class="flex flex-col justify-around md:justify-start w-full">
+            <div class="flex flex-wrap items-center gap-2 mb-0 justify-around md:justify-center">
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.genre}</span>
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.classification}</span>
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-amber-900 dark:text-yellow-300">{movie.type}</span>
@@ -74,6 +75,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
                     <span>Añadir a Favoritos</span>
                 </button>
             </div>
+          </div>
         </div>
         <div id="youtube-player" class="w-full aspect-video mx-auto rounded-lg overflow-hidden bg-black">
           {/* YouTube player will be inserted here by the client-side script */}
@@ -82,7 +84,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] w-full gap-10">
-        <div class="">
+        <div class="order-2 md:order-1">
           <p class="py-4 border-b border-gray-700 text-pretty">{movie.synopsis}</p>
           {!isUpcoming && (
             <div class="py-4 border-b border-gray-700 w-full">
@@ -108,7 +110,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
           </div>
           
         </div>
-        <div class="mt-4">
+        <div class="mt-4 order-1 md:order-2">
               <DatePicker initialDate={new Date()} />
               <div class="mt-4" id="showtimes-container">
                 {movie.showtimes?.length > 0 ? (
@@ -180,6 +182,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
 
       const updatedMovies = await response.json();
       const updatedMovie = updatedMovies?.find((m) => m.id === peliId);
+      console.log(updatedMovie)
 
       if (!updatedMovie) {
         console.error("Movie not found in response");

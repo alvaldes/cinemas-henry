@@ -11,7 +11,7 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
 
 <section class="my-8 mx-auto flex flex-col w-full bg-background text-white">
   <!-- Main Swiper Slider -->
-  <div class="max-w-6xl w-full">
+  <div class="max-w-dvw w-11/12 lg:w-full items-center justify-center">
     <swiper-container 
       navigation="false" 
       thumbs-swiper=".mySwiper2"
@@ -26,26 +26,26 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
             autoload
             autopause
             posterquality="maxresdefault"
-          class="w-11/12 h-auto mx-auto rounded-lg overflow-hidden"
+          class="w-10/12 h-auto ml-8 rounded-lg overflow-hidden"
           ></lite-youtube>
-          <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-4 w-full">
+          <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-0 w-full max-w-dvw">
             <a href={`/${cine}/${encodeURIComponent(video.id)}`} class="inline-block cursor-pointer relative group overflow-hidden rounded">
               <img
                 src={video.img_primary}
                 alt="Poster"
-                class="rounded object-cover w-auto h-48 transition-transform duration-300 group-hover:scale-105"
+                class="rounded object-cover w-auto h-24 sm:h-48 transition-transform duration-300 group-hover:scale-105"
               />
               <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded">
                 <Expand class="h-8 w-8 text-white" />
               </div>
             </a>
             <div
-              class="absolute top-4 left-4 w-10 h-auto cursor-pointer opacity-70 hover:opacity-50 rounded-tl-xl overflow-hidden"
+              class="absolute top-0 left-0 w-7 sm:w-8 h-auto cursor-pointer opacity-70 hover:opacity-50 rounded-tl-xl overflow-hidden"
               role="button"
               tabindex="0"
             >
               <svg
-                width="2.5rem"
+                width="2rem"
                 height="auto"
                 viewBox="0 0 24 34"
                 xmlns="http://www.w3.org/2000/svg"
@@ -69,15 +69,15 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
   </div>
 
   <!-- Up Next as Synchronized Thumbnails -->
-  <div class="w-full h-auto mx-auto mt-1">
+  <div class="w-11/12 max-w-dvw h-auto mx-0 mt-1">
     <h3 class="text-yellow-500 font-semibold mb-4">Próximos Estrenos</h3>
     <swiper-container
       class="mySwiper2"
       direction="horizontal"
-      slides-per-view="2.5"
+      slides-per-view="1.5"
       free-mode="true"
       watch-slides-progress="true"
-      breakpoints='{"640": {"slidesPerView": 3.5}, "768": {"slidesPerView": 5}}'
+      breakpoints='{"640": {"slidesPerView": 2}, "768": {"slidesPerView": 5}}'
     >
       {videos.map((video: Movie) => (
         <swiper-slide class="opacity-40">
