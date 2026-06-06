@@ -91,7 +91,7 @@ import NavDropdown from '@/components/NavDropdown.tsx';
 
 <script>
   document.addEventListener('cineChange', (event) => {
-    const cineValue = (event as CustomEvent).detail.value;
+    const cineValue = event.detail.value;
     if (cineValue) {
       window.location.href = `/${cineValue}`;
     }

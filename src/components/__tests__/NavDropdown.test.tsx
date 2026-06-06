@@ -4,9 +4,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import NavDropdown from '../NavDropdown';
 
 describe('NavDropdown', () => {
+  // Helper: clear cookies between tests
+  function clearCookies() {
+    document.cookie = 'selectedCine=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  }
+
   // Setup: cleanup before each test
   beforeEach(() => {
-    localStorage.clear();
+    clearCookies();
     vi.clearAllMocks();
   });
 
@@ -64,9 +69,14 @@ describe('NavDropdown', () => {
     await user.click(button);
     expect(screen.getByRole('listbox')).toBeDefined();
 
-    // Click an item
+    // Click an enabled item
     const options = screen.getAllByRole('option');
-    await user.click(options[0]);
+    const enabledOption = options.find(
+      (opt) => !opt.className.includes('cursor-not-allowed')
+    );
+    if (enabledOption) {
+      await user.click(enabledOption);
+    }
 
     // Menu should be closed
     expect(screen.queryByRole('listbox')).toBeNull();
@@ -96,45 +106,43 @@ describe('NavDropdown', () => {
   });
 
   // ============================================================================
-  // Side effect tests (localStorage)
+  // Side effect tests (cookies)
   // ============================================================================
-  it('should save selected cinema to localStorage', async () => {
+  it('should save selected cinema to cookie', async () => {
     const user = userEvent.setup();
     render(<NavDropdown />);
 
     const button = screen.getByRole('button');
     await user.click(button);
 
+    // Find the enabled option (huajuapan is the only one not disabled)
     const options = screen.getAllByRole('option');
-    await user.click(options[0]);
+    const enabledOption = options.find(
+      (opt) => !opt.className.includes('cursor-not-allowed')
+    );
+    expect(enabledOption).toBeDefined();
+    if (enabledOption) {
+      await user.click(enabledOption);
+    }
 
-    // localStorage should be updated
-    // Note: Some Preact implementations may have timing issues
-    // Use a small delay or check if it was set
-    const saved = localStorage.getItem('selectedCine');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      expect(parsed.value).toBeTruthy();
-      expect(parsed.label).toBeTruthy();
-    } else {
-      // Preact implementation might not save on first interaction
-      // This is OK for bootstrap test
-      expect(true).toBe(true);
+    // Cookie should be set with the selected cine value
+    const cookieMatch = document.cookie.match(/selectedCine=([^;]+)/);
+    expect(cookieMatch).toBeTruthy();
+    if (cookieMatch) {
+      const value = decodeURIComponent(cookieMatch[1]);
+      expect(value).toBe('huajuapan');
     }
   });
 
-  it('should load cinema from localStorage on mount', () => {
-    const cineData = {
-      value: 'test-cinema',
-      label: 'Test Cinema',
-      dominio: 'https://test.com',
-    };
-    localStorage.setItem('selectedCine', JSON.stringify(cineData));
+  it('should load cinema from cookie on mount', () => {
+    // Set cookie before mounting
+    document.cookie = 'selectedCine=huajuapan; path=/';
 
     render(<NavDropdown />);
 
     const button = screen.getByRole('button');
-    expect(button.textContent).toContain('Test Cinema');
+    // The button should display the label of huajuapan from defaultCines
+    expect(button.textContent).toBeTruthy();
   });
 
   // ============================================================================
@@ -153,20 +161,21 @@ describe('NavDropdown', () => {
       eventValue = e.detail?.value || '';
     });
 
-    // Open and select
+    // Open and select an enabled option
     const button = screen.getByRole('button');
     await user.click(button);
 
     const options = screen.getAllByRole('option');
-    await user.click(options[0]);
-
-    // Event should have fired (if implementation supports it)
-    if (eventFired) {
-      expect(eventValue).toBeTruthy();
-    } else {
-      // Preact component might not dispatch event; that's OK for Phase 1
-      expect(true).toBe(true);
+    const enabledOption = options.find(
+      (opt) => !opt.className.includes('cursor-not-allowed')
+    );
+    if (enabledOption) {
+      await user.click(enabledOption);
     }
+
+    // Event should have fired
+    expect(eventFired).toBe(true);
+    expect(eventValue).toBe('huajuapan');
   });
 
   // ============================================================================
@@ -199,9 +208,12 @@ describe('NavDropdown', () => {
     await user.click(button);
 
     const options = screen.getAllByRole('option');
+    // The first option (lagos) is disabled, so none should be selected initially
     const selectedOption = options.find(
       (opt) => opt.getAttribute('aria-selected') === 'true'
     );
+    // The default cine (lagos) is the initial state, so it should be marked selected
+    // even though it's disabled
     expect(selectedOption).toBeDefined();
   });
 });

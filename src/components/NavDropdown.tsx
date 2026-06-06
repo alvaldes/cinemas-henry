@@ -4,21 +4,30 @@ import IconChevronDown from "./IconChevronDown";
 import { defaultCines } from "@/lib/constants";
 import type { Cine } from "@/lib/types";
 
+// Cookie helpers
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function setCookie(name: string, value: string, days = 365) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
 export default function NavDropdown() {
   const [open, setOpen] = useState(false);
   const [cine, setCine] = useState<Cine>(defaultCines[0]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set cinema from local storage on component mount
+  // Set cinema from cookie on component mount
   useEffect(() => {
-    try {
-      const savedCine = localStorage.getItem("selectedCine");
-      if (savedCine) {
-        const parsedCine = JSON.parse(savedCine);
-        setCine(parsedCine);
+    const savedCineValue = getCookie("selectedCine");
+    if (savedCineValue) {
+      const matchedCine = defaultCines.find((c) => c.value === savedCineValue);
+      if (matchedCine) {
+        setCine(matchedCine);
       }
-    } catch (error) {
-      console.error("Error reading from localStorage", error);
     }
   }, []);
 
@@ -44,11 +53,8 @@ export default function NavDropdown() {
     setOpen(false);
     if (selected.value === cine.value) return;
     setCine(selected);
-    try {
-      localStorage.setItem("selectedCine", JSON.stringify(selected));
-    } catch (error) {
-      console.error("Error writing to localStorage", error);
-    }
+    // Persist preference as a cookie (1 year, readable by server middleware)
+    setCookie("selectedCine", selected.value);
     const cineChangeEvent = new CustomEvent("cineChange", {
       detail: { value: selected.value },
       bubbles: true,
