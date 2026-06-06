@@ -1,0 +1,11 @@
+---
+import { defaultCines } from "@/lib/constants";
+
+// Server-side redirect at root that reads the selectedCine cookie.
+// Falls back to "huajuapan" if the cookie is missing or invalid.
+const selectedCine = Astro.cookies.get("selectedCine")?.value;
+const isValid = selectedCine && defaultCines.some((c) => c.value === selectedCine);
+const cine = isValid ? selectedCine : "huajuapan";
+
+return Astro.redirect(`/${cine}`);
+---
