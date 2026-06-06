@@ -6,85 +6,115 @@ import NavDropdown from '@/components/NavDropdown.tsx';
   <div class="container mx-auto flex items-center justify-between py-4">
   {/* Logo */}
     <a href="/" class="flex items-center">
-    <img src="/images/LogoH.webp" alt="Logo" class="h-8 w-auto mr-4" />
-  </a>
+      <img src="/images/LogoH.webp" alt="Logo" class="h-8 w-auto mr-4" />
+    </a>
 
   {/* Search Input (desktop) */}
-<div class="hidden md:block flex-1 mx-4">
-  <form class="flex" role="search">
-    <input
-      type="text"
-      placeholder="Buscar películas..."
-      class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
-      aria-label="Search movies"
-    />
-    <button
-      type="submit"
-      class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
-      aria-label="Buscar"
-    >
-      <Search class="h-5 w-5" />
-    </button>
-  </form>
-</div>
-
-  {/* Enlaces (desktop) */}
-    <div class="hidden md:flex items-center space-x-6">
-      <a href="/watchlist" class="flex items-center hover:text-red-400">
-        <Bookmark class="h-5 w-5 mr-2" />
-        Favoritos
-      </a>
-      <a href="/showtimes" class="flex items-center hover:text-red-400">
-        <Clock class="h-5 w-5 mr-2" />
-        Cartelera
-      </a>
-    <NavDropdown client:load />
-    </div>
-
-  {/* Hamburger (mobile) */}
-    <button
-      id="menu-toggle"
-      type="button"
-      class="md:hidden p-2 text-white hover:text-red-400"
-      aria-label="Abrir menú"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-    >
-      <Menu id="icon-menu" class="h-6 w-6" />
-      <X id="icon-close" class="h-6 w-6 hidden" />
-    </button>
+  <div class="hidden md:block flex-1 mx-4">
+    <form class="flex" role="search">
+      <input
+        type="text"
+        placeholder="Buscar películas..."
+        class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
+        aria-label="Search movies"
+      />
+      <button
+        type="submit"
+        class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
+        aria-label="Buscar"
+      >
+        <Search class="h-5 w-5" />
+      </button>
+    </form>
   </div>
 
-  {/* Mobile menu */}
+  {/* Enlaces (desktop) */}
+  <div class="hidden md:flex items-center space-x-6">
+    <a href="/watchlist" class="flex items-center hover:text-red-400">
+      <Bookmark class="h-5 w-5 mr-2" />
+      Favoritos
+    </a>
+    <a href="/showtimes" class="flex items-center hover:text-red-400">
+      <Clock class="h-5 w-5 mr-2" />
+      Cartelera
+    </a>
+    <NavDropdown client:load />
+  </div>
+
+  {/* Hamburger (mobile) */}
+  <button
+    id="menu-toggle"
+    type="button"
+    class="md:hidden p-2 text-white hover:text-red-400"
+    aria-label="Abrir menú"
+    aria-expanded="false"
+    aria-controls="mobile-menu"
+  >
+    <Menu id="icon-menu" class="h-6 w-6" />
+    <X id="icon-close" class="h-6 w-6 hidden" />
+  </button>
+</div>
+
+  {/* Mobile menu - compact modal that sits below the navbar */}
   <div
     id="mobile-menu"
-    class="hidden md:hidden border-t border-gray-800 bg-gray-900/50"
+    class="hidden fixed inset-0 z-50 md:hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mobile-menu-title"
   >
-    <div class="container mx-auto flex flex-col gap-4 py-4">
-      <form class="flex" role="search">
-        <input
-          type="text"
-          placeholder="Buscar películas..."
-          class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
-          aria-label="Search movies"
-        />
+    {/* Backdrop covers everything; click closes the modal */}
+    <button
+      id="mobile-menu-backdrop"
+      type="button"
+      class="absolute inset-0 bg-black/70 cursor-default"
+      aria-label="Cerrar menú"
+    ></button>
+
+    {/* Content panel: positioned just below the navbar, auto-sized */}
+    <div
+      class="absolute top-16 left-4 right-4 max-h-[calc(100vh-5rem)] overflow-y-auto bg-gray-900 text-white rounded-lg shadow-xl border border-gray-800"
+    >
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+        <h2 id="mobile-menu-title" class="text-lg font-semibold">Menú</h2>
         <button
-          type="submit"
-          class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
-          aria-label="Buscar"
+          id="mobile-menu-close"
+          type="button"
+          class="p-2 text-white hover:text-red-400"
+          aria-label="Cerrar menú"
         >
-          <Search class="h-5 w-5" />
+          <X class="h-6 w-6" />
         </button>
-      </form>
-      <a href="/watchlist" class="flex items-center hover:text-red-400">
-        <Bookmark class="h-5 w-5 mr-2" />
-        Favoritos
-      </a>
-      <a href="/showtimes" class="flex items-center hover:text-red-400">
-        <Clock class="h-5 w-5 mr-2" />
-        Cartelera
-      </a>
-      <NavDropdown client:load />
+      </div>
+
+      <div class="px-4 py-4 flex flex-col gap-4">
+        <form class="flex" role="search">
+          <input
+            type="text"
+            placeholder="Buscar películas..."
+            class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
+            aria-label="Search movies"
+          />
+          <button
+            type="submit"
+            class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
+            aria-label="Buscar"
+          >
+            <Search class="h-5 w-5" />
+          </button>
+        </form>
+        <a href="/watchlist" class="flex items-center hover:text-red-400 text-lg">
+          <Bookmark class="h-5 w-5 mr-2" />
+          Favoritos
+        </a>
+        <a href="/showtimes" class="flex items-center hover:text-red-400 text-lg">
+          <Clock class="h-5 w-5 mr-2" />
+          Cartelera
+        </a>
+        <div>
+          <NavDropdown client:load />
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -101,17 +131,49 @@ import NavDropdown from '@/components/NavDropdown.tsx';
 <script>
   const toggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
+  const closeBtn = document.getElementById('mobile-menu-close');
+  const backdrop = document.getElementById('mobile-menu-backdrop');
   const iconMenu = document.getElementById('icon-menu');
-  const iconClose = document.getElementById('icon-close');
 
-  if (toggle && menu && iconMenu && iconClose) {
+  function openMenu() {
+    if (!menu || !toggle || !iconMenu) return;
+    menu.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Cerrar menú');
+    iconMenu.classList.add('hidden');
+    // Focus the close button so screen readers / keyboard users land in the modal
+    closeBtn?.focus();
+  }
+
+  function closeMenu() {
+    if (!menu || !toggle || !iconMenu) return;
+    menu.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Abrir menú');
+    iconMenu.classList.remove('hidden');
+    // Return focus to the trigger
+    toggle.focus();
+  }
+
+  if (toggle && menu && closeBtn && backdrop) {
     toggle.addEventListener('click', () => {
       const isOpen = !menu.classList.contains('hidden');
-      menu.classList.toggle('hidden');
-      iconMenu.classList.toggle('hidden');
-      iconClose.classList.toggle('hidden');
-      toggle.setAttribute('aria-expanded', String(!isOpen));
-      toggle.setAttribute('aria-label', isOpen ? 'Abrir menú' : 'Cerrar menú');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    closeBtn.addEventListener('click', closeMenu);
+    backdrop.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
+        closeMenu();
+      }
     });
   }
 </script>
