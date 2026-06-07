@@ -1,17 +1,19 @@
 import { useEffect, useState } from "preact/hooks";
 import { useFavorites } from "@/lib/hooks/useFavorites";
 import {
-	removeFavorite,
-	groupFavoritesByCine,
+  clearFavorites,
+  removeFavorite,
+  groupFavoritesByCine,
 } from "@/lib/stores/favorites";
 import type { Movie } from "@/lib/types";
 import { titleCase } from "@/lib/utils";
 import IconBookmark from "./IconBookmark";
+import IconTrash2 from "./IconTrash2";
 
 type CineMovies = {
-	loading: boolean;
-	error: string | null;
-	movies: Map<string, Movie>; // movieId -> Movie
+  loading: boolean;
+  error: string | null;
+  movies: Map<string, Movie>; // movieId -> Movie
 };
 
 type CineMoviesState = Record<string, CineMovies>;
@@ -29,11 +31,11 @@ type CineMoviesState = Record<string, CineMovies>;
  *  - Loaded: grid of cards with a remove button
  */
 export default function FavoritesList() {
-	const favorites = useFavorites();
+  const favorites = useFavorites();
 
-	// Group favorites by cine. Re-derived on every render — cheap (small list).
-	const groups = groupFavoritesByCine(favorites);
-	const cineIds = groups.map((g) => g.cine);
+  // Group favorites by cine. Re-derived on every render — cheap (small list).
+  const groups = groupFavoritesByCine(favorites);
+  const cineIds = groups.map((g) => g.cine);
 
   // Per-cine fetch state. Keyed by cine value.
   const [state, setState] = useState<CineMoviesState>({});
@@ -101,12 +103,22 @@ export default function FavoritesList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cineIds.join("|")]);
 
+  // True when every cine group has finished fetching movies (success or error).
+  // The clear-all button stays hidden while movies are still loading so the
+  // user doesn't see a destructive action alongside skeleton / loading text.
+  const allCinesLoaded =
+    groups.length > 0 &&
+    groups.every((g) => {
+      const s = state[g.cine];
+      return s && !s.loading;
+    });
+
   // --- Render helpers ---------------------------------------------------
 
   if (favorites.length === 0) {
     return (
       <div
-        class="text-center py-16 text-gray-400"
+        class="text-center pt-16 text-gray-400"
         data-testid="favorites-empty"
       >
         <IconBookmark size="48" color="currentColor" />
@@ -126,6 +138,7 @@ export default function FavoritesList() {
           <section
             key={group.cine}
             data-testid={`favorites-cine-${group.cine}`}
+            class={"mb-2"}
           >
             <h2 class="text-base font-semibold flex items-center mb-3">
               <span class="text-yellow-400 mr-1 text-xl">|</span>
@@ -229,6 +242,24 @@ export default function FavoritesList() {
           </section>
         );
       })}
+
+      {allCinesLoaded && (
+        <div class="flex justify-center pt-6 border-t border-neutral-700">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm("¿Borrar todas las películas de favoritos?")) {
+                clearFavorites();
+              }
+            }}
+            class="inline-flex items-center gap-1.5 text-xs py-1.5 px-3 rounded bg-neutral-800 hover:bg-neutral-700 text-gray-300 hover:text-red-400 transition-colors cursor-pointer"
+            data-testid="clear-all-favorites"
+          >
+            <IconTrash2 size="14" />
+            Vaciar Favoritos
+          </button>
+        </div>
+      )}
     </div>
   );
 }
