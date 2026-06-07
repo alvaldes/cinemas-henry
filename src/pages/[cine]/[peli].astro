@@ -180,7 +180,6 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
 
       const updatedMovies = await response.json();
       const updatedMovie = updatedMovies?.find((m) => m.id === peliId);
-      console.log(updatedMovie)
 
       if (!updatedMovie) {
         console.error("Movie not found in response");

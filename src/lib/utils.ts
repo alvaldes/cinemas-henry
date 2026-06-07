@@ -47,10 +47,8 @@ export async function getMovies(
 	retries = 3,
 ): Promise<Movie[] | undefined> {
 	if (!dominio) dominio = defaultCines[0].dominio;
-	console.log("Dominio: ", dominio);
 	const today = date ?? new Date();
 	const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-	console.log("Formatted Date: ", formattedDate);
 
 	const formData = new FormData();
 	formData.append("fecha", formattedDate);
@@ -139,7 +137,6 @@ export async function getMovies(
 		return movies;
 	} catch (error) {
 		if (retries > 0) {
-			console.log(`Retrying... (${retries} attempts left)`);
 			await new Promise((res) => setTimeout(res, 1000)); // Wait 1 second before retrying
 			return getMovies(dominio, date, retries - 1);
 		} else {
