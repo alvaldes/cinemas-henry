@@ -1,7 +1,8 @@
 ---
 import MainLayout from '@/layouts/main.astro';
-import { Bookmark, Clock } from '@lucide/astro';
+import { Clock } from '@lucide/astro';
 import DatePicker from '@/components/DatePicker.astro';
+import FavoriteButton from '@/components/FavoriteButton';
 import type { Movie } from '@/lib/types';
 import { parseDate, normalizeDate, formatDuration, titleCase } from '@/lib/utils';
 
@@ -70,10 +71,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
                       <span class="text-sm"> Estreno {movie.releaseDate}</span>
                   </div>
                 )}
-                <button class="flex items-center bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-3xl justify-center cursor-pointer">
-                    <Bookmark class="h-5 w-5 mr-2" />
-                    <span>Añadir a Favoritos</span>
-                </button>
+                <FavoriteButton cine={cine} movieId={movie.id} client:load />
             </div>
           </div>
         </div>

@@ -2,10 +2,16 @@
 import { Clock, Play, Timer, ChevronRight, Expand } from '@lucide/astro';
 import type { Movie } from '@/lib/types';
 import { formatDuration } from '@/lib/utils';
+import PosterFavoriteButton from '@/components/PosterFavoriteButton';
 import 'swiper/css';
 
 const { movies } = Astro.props;
-const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
+// Extract cine from the URL (e.g. "/huajuapan" → "huajuapan"). Keep this
+// in sync with `TrailerGallery.astro` and `[cine]/[peli].astro` — all three
+// must produce the IDENTICAL string for the same cine, otherwise the same
+// movie gets saved under different keys in the favorites store and `isFav`
+// returns false across components. See git history for the bug this caused.
+const cine = Astro.url.pathname.split('/')[1] ?? '';
 ---
 <section class="py-6 text-white max-w-dvw w-full mr-2">
   <div class="mb-4">
@@ -31,6 +37,11 @@ const cine = Astro.url.pathname.replace(/\/$/, ''); // Remove trailing slash
                 <Expand class="h-8 w-8 text-white" />
               </div>
             </a>
+            <PosterFavoriteButton
+              cine={cine}
+              movieId={movie.id}
+              client:load
+            />
           </div>
           <div class="p-2 h-20 flex flex-col justify-between">
             <div class="ml-2">
