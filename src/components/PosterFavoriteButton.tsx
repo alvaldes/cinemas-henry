@@ -32,7 +32,6 @@ export default function PosterFavoriteButton({
 }: Props) {
   const favorites = useFavorites();
   const isFav = favorites.some((f) => f.cine === cine && f.movieId === movieId);
-  // console.log(isFav + "-" + cine + "-" + movieId);
 
   const handleClick = (e: MouseEvent) => {
     // The button overlays a clickable link wrapping the poster. Stop

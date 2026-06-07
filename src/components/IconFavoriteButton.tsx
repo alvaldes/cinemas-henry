@@ -29,7 +29,6 @@ export default function IconFavoriteButton({
 }: Props) {
   const favorites = useFavorites();
   const isFav = favorites.some((f) => f.cine === cine && f.movieId === movieId);
-  console.log(isFav + "-" + cine + "-" + movieId);
 
   const handleClick = (e: MouseEvent) => {
     // This button usually sits on top of a clickable link/poster. Stop
