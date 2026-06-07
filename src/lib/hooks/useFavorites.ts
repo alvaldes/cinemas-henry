@@ -2,7 +2,6 @@ import { useEffect, useState } from "preact/hooks";
 import {
 	$favorites,
 	initFavorites,
-	readFavoritesFromStorage,
 	type Favorite,
 } from "@/lib/stores/favorites";
 
@@ -64,9 +63,11 @@ export function useFavorites(): readonly Favorite[] {
 	useEffect(() => {
 		// Idempotent: populates the store from localStorage on first call only.
 		initFavorites();
-		// Sync state with the canonical store + localStorage. The `?? []`
-		// covers the edge case where both are empty (no favorites yet).
-		setFavorites(readFavoritesFromStorage());
+		// Read from the store, which `initFavorites` just hydrated from
+		// localStorage. Using the store instead of calling
+		// `readFavoritesFromStorage` directly avoids a redundant read +
+		// validate + migrate cycle — `initFavorites` already handled that.
+		setFavorites([...$favorites.get()]);
 		// nanostores' `subscribe()` fires the listener IMMEDIATELY with the
 		// current value of the atom. If we don't skip that first call, it
 		// would re-set state to the same value we just set above (a no-op

@@ -60,11 +60,11 @@ describe("useFavorites()", () => {
 		expect(favoritesStore.$favorites.get()).toHaveLength(1);
 	});
 
-	it("does not re-apply the same value if initFavorites and the localStorage read both produce `[]`", async () => {
-		// Regression guard: with the old `setFavorites($favorites.get())`
-		// pattern, the store would always overwrite the localStorage-derived
-		// state. Now we read directly from localStorage in the effect, so
-		// an empty localStorage stays empty (no spurious re-render).
+	it("does not re-apply the same value if initFavorites and the store both produce `[]`", async () => {
+		// Regression guard: we read from `$favorites.get()` (which
+		// `initFavorites` just populated) instead of calling
+		// `readFavoritesFromStorage` a second time. An empty store stays
+		// empty (no spurious re-render on mount).
 		const { useFavorites } = await import("../hooks/useFavorites");
 		const { result, rerender } = renderHook(() => useFavorites());
 		expect(result.current).toEqual([]);
