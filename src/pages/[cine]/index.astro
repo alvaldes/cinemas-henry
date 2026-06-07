@@ -36,12 +36,11 @@ const upNext: Movie[] = movies.filter((movie: Movie) => {
   return normalizeDate(movieDate) > today; // Movies releasing in the future
 });
 
-// TODO: hace falta arreglar el disenno para cuando no hay peliculas por estrenar (upNext.length === 0)
 ---
 
 <MainLayout content={{ title: 'Henry Cinemas' }}>
   <div class="container mx-auto grid">
-    <TrailerGallery videos={upNext} />
+    {upNext.length > 0 && <TrailerGallery videos={upNext} />}
     <NowPlaying movies={nowPlaying} />
   </div>
 </MainLayout>
