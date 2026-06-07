@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import {
 	$favorites,
 	initFavorites,
+	readFavoritesFromStorage,
 	type Favorite,
 } from "@/lib/stores/favorites";
 
@@ -22,25 +23,23 @@ import {
  * call (guarded by a module-local `hydrated` flag), so mounting the hook
  * from many components is free.
  *
- * Why the state is initialized to `[]` and not to `readFavoritesFromStorage()`:
+ * Why the initializer reads from localStorage AND the effect still sets state:
  *
- * Naively seeding the state with a localStorage read works in a client-only
- * render, but breaks under Astro's SSR + hydration. With `client:load`,
- * Astro renders the component on the server (where localStorage is
- * undefined, so the helper returns `[]` → state starts empty) and then
- * hydrates on the client. During hydration Preact reuses the server's
- * `[]` state — it does NOT re-run the initializer — and crucially, it
- * does NOT re-apply SVG attribute changes from the new render onto the
- * server-rendered DOM. The result: the JSX is correct (`isFav = true`,
- * `ribbonFill = "#facc15"`) but the DOM keeps the server's `fill="#000000"`.
- * The component looks un-favorited even though the data says otherwise.
+ * On the server, `readFavoritesFromStorage()` returns `[]` (no localStorage),
+ * so SSR produces `isFav = false` and `fill="#000000"` in the HTML. During
+ * hydration, Preact reuses the server's `[]` state — it does NOT re-run the
+ * initializer. The result: SVG `fill` attributes stay dark ("not favorited")
+ * even if the user has favorites saved, because Preact does not re-apply SVG
+ * attribute changes during hydration.
  *
- * Initializing to `[]` and then `setFavorites(readFavoritesFromStorage())`
- * inside the effect forces a re-render AFTER mount. The re-render produces
- * a fresh virtual DOM, Preact diffs it against the current DOM, and the
- * SVG attributes get updated correctly. The user sees a one-frame flash
- * of "not favorited" on first paint — invisible in practice — instead of
- * a permanent stale state.
+ * The effect re-renders AFTER hydration, producing a fresh virtual DOM that
+ * Preact diffs against the current DOM. This forces SVG attribute updates.
+ *
+ * So why not keep `useState([])` then? Because `readFavoritesFromStorage()`
+ * in the initializer gives a correct first paint on CLIENT-SIDE re-mounts
+ * that skip SSR (e.g. Astro view transitions). In that case the initializer
+ * runs on the client with real localStorage data, and the effect re-render
+ * is a no-op (same data, harmless).
  *
  * The `<FavoriteButton>` on the detail page doesn't hit this bug because
  * it uses CSS classes (`bg-yellow-400`) instead of SVG `fill` attributes.
@@ -56,10 +55,13 @@ import {
  * hook — import `toggleFavorite` / `addFavorite` / `removeFavorite` directly.
  */
 export function useFavorites(): readonly Favorite[] {
-	// Start empty to match the SSR render. The effect below hydrates from
-	// localStorage and triggers a re-render with the real data. This avoids
-	// the SSR + hydration SVG-attribute-staleness bug.
-	const [favorites, setFavorites] = useState<readonly Favorite[]>([]);
+	// Initialise from localStorage — on the server (SSR) this returns `[]`;
+	// on client-side re-mounts (e.g. view transitions) it returns the real
+	// data for a correct first paint. The effect below then re-renders after
+	// mount to fix SVG attributes that Preact doesn't update during hydration.
+	const [favorites, setFavorites] = useState<readonly Favorite[]>(
+		() => readFavoritesFromStorage(),
+	);
 	useEffect(() => {
 		// Idempotent: populates the store from localStorage on first call only.
 		initFavorites();
