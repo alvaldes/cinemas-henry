@@ -50,8 +50,8 @@ import NavDropdown from '@/components/NavDropdown.tsx';
     aria-expanded="false"
     aria-controls="mobile-menu"
   >
-    <Menu id="icon-menu" class="h-6 w-6" />
-    <X id="icon-close" class="h-6 w-6 hidden" />
+    <span id="icon-menu"><Menu class="h-6 w-6" /></span>
+    <span id="icon-close" class="hidden"><X class="h-6 w-6" /></span>
   </button>
 </div>
 
@@ -134,26 +134,29 @@ import NavDropdown from '@/components/NavDropdown.tsx';
   const menu = document.getElementById('mobile-menu');
   const closeBtn = document.getElementById('mobile-menu-close');
   const backdrop = document.getElementById('mobile-menu-backdrop');
-  const iconMenu = document.getElementById('icon-menu');
+  const iconMenuWrap = document.getElementById('icon-menu');
+  const iconCloseWrap = document.getElementById('icon-close');
 
   function openMenu() {
-    if (!menu || !toggle || !iconMenu) return;
+    if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
     menu.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Cerrar menú');
-    iconMenu.classList.add('hidden');
+    iconMenuWrap.classList.add('hidden');
+    iconCloseWrap.classList.remove('hidden');
     // Focus the close button so screen readers / keyboard users land in the modal
     closeBtn?.focus();
   }
 
   function closeMenu() {
-    if (!menu || !toggle || !iconMenu) return;
+    if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
     menu.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
     toggle.setAttribute('aria-expanded', 'false');
     toggle.setAttribute('aria-label', 'Abrir menú');
-    iconMenu.classList.remove('hidden');
+    iconMenuWrap.classList.remove('hidden');
+    iconCloseWrap.classList.add('hidden');
     // Return focus to the trigger
     toggle.focus();
   }
