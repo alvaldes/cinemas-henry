@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/preact";
+import type { Favorite } from "@/lib/stores/favorites";
 
 const STORAGE_KEY = "cinemas-henry:favorites";
 
@@ -27,17 +28,15 @@ describe("useFavorites()", () => {
 		expect(result.current).toEqual([]);
 	});
 
-	it("hydrates from localStorage in the post-mount effect (re-render), not in the initial render", async () => {
-		// This is the test that locks in the SSR + hydration fix. On the
-		// server `readFavoritesFromStorage()` returns `[]` (no localStorage),
-		// so the SSR'd DOM has isFav = false. The client must re-render
-		// after mount with the real localStorage data so the DOM is updated.
+	it("hydrates from localStorage in the post-mount effect (store hydration)", async () => {
+		// The key assertion is that the effect runs `initFavorites()` which
+		// populates the nanostores `$favorites` store — this is what makes
+		// the /watchlist page work and keeps the store in sync with the UI.
 		//
-		// If this regresses to `useState(() => readFavoritesFromStorage())`,
-		// the test still passes in the happy path (the effect would set
-		// the same value). The assertion that matters is below: the
-		// `$favorites` store MUST end up populated, proving the hydration
-		// effect ran.
+		// On the first render, `useState(() => readFavoritesFromStorage())`
+		// already returns the localStorage data (see the "first render" test
+		// below). The effect's `setFavorites(...)` is then a re-render that
+		// fixes SVG attributes that Preact doesn't diff during hydration.
 		localStorage.setItem(
 			STORAGE_KEY,
 			JSON.stringify([{ cine: "huajuapan", movieId: "1", addedAt: 1 }]),
@@ -58,6 +57,32 @@ describe("useFavorites()", () => {
 		// And the store was hydrated too (this is what makes the
 		// /watchlist page work on first navigation, etc).
 		expect(favoritesStore.$favorites.get()).toHaveLength(1);
+	});
+
+	it("reads from localStorage on the first render (client-side)", async () => {
+		localStorage.setItem(
+			STORAGE_KEY,
+			JSON.stringify([{ cine: "huajuapan", movieId: "1", addedAt: 1 }]),
+		);
+
+		// Capture every render value to inspect the very first one.
+		const renders: readonly Favorite[][] = [];
+		const { useFavorites } = await import("../hooks/useFavorites");
+
+		renderHook(() => {
+			const favs = useFavorites();
+			renders.push(favs);
+			return favs;
+		});
+
+		// The useState(() => readFavoritesFromStorage()) initializer gives
+		// us the localStorage data on the very first render (client-side).
+		expect(renders[0]).toHaveLength(1);
+		expect(renders[0][0]).toEqual({
+			cine: "huajuapan",
+			movieId: "1",
+			addedAt: 1,
+		});
 	});
 
 	it("does not re-apply the same value if initFavorites and the store both produce `[]`", async () => {
