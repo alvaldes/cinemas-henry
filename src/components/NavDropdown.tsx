@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "preact/hooks";
+import { useState, useRef, useEffect, useLayoutEffect } from "preact/hooks";
 import IconMap from "./IconMap";
 import IconChevronDown from "./IconChevronDown";
 import { defaultCines } from "@/lib/constants";
@@ -32,7 +32,11 @@ export default function NavDropdown() {
   }, []);
 
   // Close dropdown if clicking outside
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so the listener is registered in the same
+  // frame the menu opens. useEffect schedules via requestAnimationFrame which
+  // can race with the next test/user click in jsdom (and is imperceptible to
+  // real users either way — the listener is active before any paint).
+  useLayoutEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         dropdownRef.current &&
