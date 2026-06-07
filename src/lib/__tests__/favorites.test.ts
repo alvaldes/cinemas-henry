@@ -260,6 +260,24 @@ describe("readFavoritesFromStorage()", () => {
 		// hydration step. (Hydration is initFavorites' job.)
 		expect($favorites.get()).toEqual([]);
 	});
+
+	it("dedupes exact duplicates by composite key (same cine, same movieId)", () => {
+		localStorage.setItem(
+			FAVORITES_STORAGE_KEY,
+			JSON.stringify([
+				{ cine: "huajuapan", movieId: "1", addedAt: 1 },
+				{ cine: "huajuapan", movieId: "1", addedAt: 2 },
+			]),
+		);
+		const result = readFavoritesFromStorage();
+		expect(result).toHaveLength(1);
+		expect(result[0].addedAt).toBe(1); // keeps the first occurrence
+	});
+
+	it("returns [] when localStorage holds an empty array", () => {
+		localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([]));
+		expect(readFavoritesFromStorage()).toEqual([]);
+	});
 });
 
 describe("initFavorites()", () => {
