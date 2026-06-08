@@ -1,0 +1,68 @@
+---
+import MainLayout from '@/layouts/main.astro';
+import MovieCard from '@/components/MovieCard.astro';
+import { searchMovies } from '@/lib/utils';
+import type { Movie } from '@/lib/types';
+
+export const prerender = false;
+
+const { cine } = Astro.params;
+const query = Astro.url.searchParams.get('q') ?? '';
+
+let movies: Movie[] = [];
+let results: Movie[] = [];
+
+if (cine) {
+  try {
+    movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json`).then(
+      (response) => {
+        if (!response.ok) throw new Error('Error al obtener las películas');
+        return response.json();
+      },
+    );
+  } catch (error) {
+    console.error('Error fetching movies for search:', error);
+    movies = [];
+  }
+
+  if (query) {
+    results = searchMovies(movies, query);
+  }
+}
+---
+
+<MainLayout content={{ title: 'Resultados de búsqueda' }}>
+  <section class="container mx-auto py-6 text-white">
+    {query ? (
+      <>
+        <h1 class="text-xl font-semibold mb-6">
+          Resultados para: <span class="text-yellow-400">'{query}'</span>
+        </h1>
+
+        {results.length > 0 ? (
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {results.map((movie: Movie) => (
+              <MovieCard movie={movie} cine={cine!} />
+            ))}
+          </div>
+        ) : (
+          <p class="text-gray-400 text-lg">
+            No se encontraron películas para '{query}'
+          </p>
+        )}
+      </>
+    ) : (
+      <div class="text-center py-20">
+        <p class="text-gray-400 text-lg mb-4">
+          Escribe un término para buscar
+        </p>
+        <a
+          href={`/${cine}`}
+          class="text-yellow-400 hover:text-yellow-300 underline"
+        >
+          Volver a la cartelera
+        </a>
+      </div>
+    )}
+  </section>
+</MainLayout>

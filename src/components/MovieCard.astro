@@ -1,0 +1,44 @@
+---
+import { Clock, Timer, Expand } from '@lucide/astro';
+import type { Movie } from '@/lib/types';
+import { formatDuration } from '@/lib/utils';
+import PosterFavoriteButton from '@/components/PosterFavoriteButton';
+
+type Props = {
+  movie: Movie;
+  cine: string;
+};
+
+const { movie, cine } = Astro.props;
+---
+
+<article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
+  <div class="relative group overflow-hidden">
+    <a href={`/${cine}/${encodeURIComponent(movie.id)}`}>
+      <img src={movie.img_primary} alt={movie.id} class="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105" transition:name={`poster-${movie.id}`} />
+      <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <Expand class="h-8 w-8 text-white" />
+      </div>
+    </a>
+    <PosterFavoriteButton
+      cine={cine}
+      movieId={movie.id}
+      client:load
+    />
+  </div>
+  <div class="p-2 h-20 flex flex-col justify-between">
+    <div class="ml-2">
+      <div class="flex items-center text-sm space-x-1 text-yellow-400 font-semibold">
+        <Timer class="h-3.5 w-3.5" />
+        <span>{formatDuration(movie.duration)}</span>
+      </div>
+      <h3 class="text-sm mt-1 font-medium capitalize">
+        <a href={`/${cine}/${encodeURIComponent(movie.id)}`} transition:name={`title-${movie.id}`}>{movie.title}</a>
+      </h3>
+    </div>
+  </div>
+  <button class="flex items-center justify-center gap-1 bg-neutral-800 hover:bg-white/10 text-sm font-semibold text-white rounded-2xl py-2 my-4 mx-auto w-11/12 cursor-pointer">
+    <Clock class="h-5 w-5 mr-2" />
+    Calendario
+  </button>
+</article>

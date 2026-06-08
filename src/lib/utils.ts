@@ -146,4 +146,30 @@ export async function getMovies(
 	}
 }
 
-// Test comment
+export function searchMovies(movies: Movie[], query: string): Movie[] {
+	const q = query.toLowerCase().trim();
+	if (!q) return [];
+
+	const matchesTitle: Movie[] = [];
+	const matchesOther: Movie[] = [];
+
+	for (const movie of movies) {
+		const title = (movie.title ?? '').toLowerCase();
+		const genre = (movie.genre ?? '').toLowerCase();
+		const director = (movie.director ?? '').toLowerCase();
+		const actors = (movie.actors ?? '');
+
+		const inTitle = title.includes(q);
+		const inGenre = genre.includes(q);
+		const inDirector = director.includes(q);
+		const inActors = actors
+			.split(',')
+			.some((a: string) => a.trim().toLowerCase().includes(q));
+
+		if (inTitle || inGenre || inDirector || inActors) {
+			(inTitle ? matchesTitle : matchesOther).push(movie);
+		}
+	}
+
+	return [...matchesTitle, ...matchesOther];
+}
