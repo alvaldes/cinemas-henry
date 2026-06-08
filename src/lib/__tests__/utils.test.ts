@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { cn, parseDate, normalizeDate, getMovies } from '../utils';
+import { cn, parseDate, normalizeDate, formatToAmPm, getMovies } from '../utils';
 
 describe('cn() - classname merge utility', () => {
   it('should merge multiple class strings', () => {
@@ -92,6 +92,33 @@ describe('normalizeDate() - date normalization utility', () => {
 
     expect(normalized.getDate()).toBe(28);
     expect(normalized.getHours()).toBe(0);
+  });
+});
+
+describe('formatToAmPm() - 24h to 12h time converter', () => {
+  it('should convert afternoon time to PM', () => {
+    expect(formatToAmPm('16:30')).toBe('4:30 PM');
+  });
+
+  it('should convert morning time to AM', () => {
+    expect(formatToAmPm('09:00')).toBe('9:00 AM');
+  });
+
+  it('should convert midnight to 12:00 AM', () => {
+    expect(formatToAmPm('00:00')).toBe('12:00 AM');
+  });
+
+  it('should convert noon to 12:00 PM', () => {
+    expect(formatToAmPm('12:00')).toBe('12:00 PM');
+  });
+
+  it('should pad minutes with leading zero', () => {
+    expect(formatToAmPm('8:05')).toBe('8:05 AM');
+  });
+
+  it('should return original string for invalid input', () => {
+    expect(formatToAmPm('')).toBe('');
+    expect(formatToAmPm('abc')).toBe('abc');
   });
 });
 

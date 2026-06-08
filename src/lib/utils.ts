@@ -32,6 +32,17 @@ export const formatDuration = (minutes: number | string): string => {
 	return `${hours}h ${mins}min`;
 };
 
+// Convert 24h time string (e.g. "16:30") to 12h AM/PM format (e.g. "4:30 PM")
+export const formatToAmPm = (hour: string): string => {
+	const [h, m] = hour.split(":").map(Number);
+	if (isNaN(h) || isNaN(m)) return hour;
+
+	const period = h >= 12 ? "PM" : "AM";
+	const hour12 = h % 12 || 12;
+
+	return `${hour12}:${m.toString().padStart(2, "0")} ${period}`;
+};
+
 // Capitalize the first letter of each word (like CSS text-transform: capitalize)
 export const titleCase = (str: string): string => {
 	return str
