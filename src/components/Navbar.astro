@@ -56,14 +56,14 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
   </div>
 
   {/* Enlaces (desktop) */}
-  <div class="hidden md:flex items-center space-x-6">
-    <a href="/watchlist" class="flex items-center hover:text-red-400">
-      <Bookmark class="h-5 w-5 mr-2" />
-      Favoritos
+  <div class="hidden md:flex items-center gap-1 lg:gap-6">
+    <a href="/watchlist" class="flex items-center hover:text-red-400 px-1.5 lg:px-0" title="Favoritos">
+      <Bookmark class="h-5 w-5 shrink-0" />
+      <span class="hidden lg:inline ml-1.5">Favoritos</span>
     </a>
-    <a href="/showtimes" class="flex items-center hover:text-red-400">
-      <Clock class="h-5 w-5 mr-2" />
-      Cartelera
+    <a href="/showtimes" class="flex items-center hover:text-red-400 px-1.5 lg:px-0" title="Cartelera">
+      <Clock class="h-5 w-5 shrink-0" />
+      <span class="hidden lg:inline ml-1.5">Cartelera</span>
     </a>
     <NavDropdown client:load />
   </div>
