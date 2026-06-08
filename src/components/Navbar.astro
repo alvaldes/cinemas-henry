@@ -9,7 +9,7 @@ const searchCine = defaultCines.some((c) => c.value === pathCine)
   : Astro.cookies.get('selectedCine')?.value ?? 'huajuapan';
 const searchQuery = Astro.url.searchParams.get('q') ?? '';
 ---
-<nav class="m-auto bg-gray-900/50 text-white px-4">
+<nav class="w-full bg-gray-900/50 text-white px-4">
   <div class="container mx-auto flex items-center justify-between py-4">
   {/* Logo */}
     <a href="/" class="flex items-center">
