@@ -1,3 +1,4 @@
+import { useEffect, useState } from "preact/hooks";
 import { useFavorites } from "@/lib/hooks/useFavorites";
 import { toggleFavorite } from "@/lib/stores/favorites";
 
@@ -31,7 +32,21 @@ export default function PosterFavoriteButton({
   className,
 }: Props) {
   const favorites = useFavorites();
-  const isFav = favorites.some((f) => f.cine === cine && f.movieId === movieId);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  // During SSR and hydration (first render) `hydrated` is always `false`,
+  // so `isFav` is `false` and the "outline" SVG renders — matching the
+  // SSR output exactly. After the `useEffect` fires, `hydrated` becomes
+  // `true` and we re-compute `isFav` from the real favorites. The key
+  // flips from "outline" to "filled", which forces Preact to replace the
+  // DOM node entirely — bypassing its buggy SVG attribute reconciliation.
+  const isFav =
+    hydrated &&
+    favorites.some((f) => f.cine === cine && f.movieId === movieId);
 
   const handleClick = (e: MouseEvent) => {
     // The button overlays a clickable link wrapping the poster. Stop
@@ -53,22 +68,45 @@ export default function PosterFavoriteButton({
       }`.trim()}
     >
       {/* Lucide bookmark. Filled yellow when favorited, outline white
-			    otherwise. We use a single inline SVG with conditional `fill`
-			    so the transition between states stays crisp. */}
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill={isFav ? "#facc15" : "none"}
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-      </svg>
+			    otherwise. We use conditional rendering with a `key` prop:
+			    when `isFav` flips, Preact unmounts the old SVG and mounts
+			    a fresh one with the correct `fill` attribute from scratch,
+			    bypassing its unreliable SVG attribute updates after
+			    hydration entirely (the same class of issue documented in
+			    `useFavorites`). */}
+      {isFav ? (
+        <svg
+          key="filled"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="#facc15"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+        </svg>
+      ) : (
+        <svg
+          key="outline"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+        </svg>
+      )}
     </button>
   );
 }

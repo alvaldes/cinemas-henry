@@ -1,3 +1,4 @@
+import { useEffect, useState } from "preact/hooks";
 import { useFavorites } from "@/lib/hooks/useFavorites";
 import { toggleFavorite } from "@/lib/stores/favorites";
 
@@ -28,7 +29,20 @@ export default function IconFavoriteButton({
   className,
 }: Props) {
   const favorites = useFavorites();
-  const isFav = favorites.some((f) => f.cine === cine && f.movieId === movieId);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  // During SSR and hydration (first render) `hydrated` is always `false`,
+  // so `isFav` is `false` and the outline/black ribbon renders — matching
+  // the SSR output exactly. After the `useEffect` fires, `hydrated` becomes
+  // `true` and we re-compute `isFav` from the real favorites. The key
+  // flips, forcing Preact to replace polygon DOM nodes entirely.
+  const isFav =
+    hydrated &&
+    favorites.some((f) => f.cine === cine && f.movieId === movieId);
 
   const handleClick = (e: MouseEvent) => {
     // This button usually sits on top of a clickable link/poster. Stop
@@ -37,8 +51,6 @@ export default function IconFavoriteButton({
     e.stopPropagation();
     toggleFavorite(cine, movieId);
   };
-
-  const ribbonFill = isFav ? "#facc15" : "#000000"; // yellow-400 vs black
 
   return (
     <button
@@ -52,7 +64,11 @@ export default function IconFavoriteButton({
       }`.trim()}
     >
       {/* Ribbon shape. The duplicate transparent polygon keeps the
-			    pointer hit area stable across the notch on the bottom edge. */}
+			    pointer hit area stable across the notch on the bottom edge.
+			    We use conditional rendering + `key` on the ribbon polygons
+			    so that when `isFav` changes after hydration, Preact replaces
+			    the polygon nodes entirely instead of trying to update their
+			    `fill` attribute — which it doesn't do reliably. */}
       <svg
         width="2rem"
         height="auto"
@@ -60,18 +76,37 @@ export default function IconFavoriteButton({
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
+        {isFav ? (
+          <polygon
+            key="ribbon-top"
+            fill="#facc15"
+            points="24 0 0 0 0 32 12.24 26.29 24 31.77"
+          />
+        ) : (
+          <polygon
+            key="ribbon-top"
+            fill="#000000"
+            points="24 0 0 0 0 32 12.24 26.29 24 31.77"
+          />
+        )}
         <polygon
-          fill={ribbonFill}
-          points="24 0 0 0 0 32 12.24 26.29 24 31.77"
-        />
-        <polygon
+          key="ribbon-mid"
           fill="transparent"
           points="24 0 0 0 0 32 12.24 26.29 24 31.77"
         />
-        <polygon
-          fill={ribbonFill}
-          points="24 31.77 24 33.77 12.24 28.29 0 34 0 32 12.24 26.29"
-        />
+        {isFav ? (
+          <polygon
+            key="ribbon-bot"
+            fill="#facc15"
+            points="24 31.77 24 33.77 12.24 28.29 0 34 0 32 12.24 26.29"
+          />
+        ) : (
+          <polygon
+            key="ribbon-bot"
+            fill="#000000"
+            points="24 31.77 24 33.77 12.24 28.29 0 34 0 32 12.24 26.29"
+          />
+        )}
       </svg>
 
       {/* Icon overlay. "+" when not favorited, filled bookmark when

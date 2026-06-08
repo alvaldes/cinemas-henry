@@ -84,12 +84,15 @@ describe("PosterFavoriteButton", () => {
 		);
 	});
 
-	it("renders the bookmark icon with no fill when not favorited", () => {
+	it("renders the bookmark icon with fill='none' (outline) when not favorited", () => {
 		const { container } = render(
 			<PosterFavoriteButton cine="huajuapan" movieId="42" />,
 		);
 		const svg = container.querySelector("svg");
 		expect(svg).toBeTruthy();
+		// Conditional rendering with `key` — Preact unmounts and mounts a
+		// fresh SVG element when `isFav` flips, so the `fill` attribute
+		// is set from scratch and never needs post-hydration updates.
 		expect(svg?.getAttribute("fill")).toBe("none");
 		// Sanity: the lucide bookmark glyph is present
 		expect(svg?.querySelector("path")?.getAttribute("d")).toContain(
@@ -97,7 +100,7 @@ describe("PosterFavoriteButton", () => {
 		);
 	});
 
-	it("renders the bookmark icon filled with yellow when favorited", () => {
+	it("renders the bookmark icon with fill='#facc15' (filled yellow) when favorited", () => {
 		$favorites.set([{ cine: "huajuapan", movieId: "42", addedAt: 1 }]);
 		const { container } = render(
 			<PosterFavoriteButton cine="huajuapan" movieId="42" />,
