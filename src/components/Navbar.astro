@@ -113,9 +113,9 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
 
     {/* Content panel: positioned just below the navbar, auto-sized to dynamic viewport */}
     <div
-      class="absolute top-16 left-4 right-4 max-h-[calc(100dvh-5rem)] overflow-y-auto bg-gray-900 text-white rounded-lg shadow-xl border border-gray-800"
+      class="absolute top-16 left-4 right-4 max-h-[calc(100dvh-5rem)] bg-gray-900 text-white rounded-lg shadow-xl border border-gray-800 flex flex-col"
     >
-      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
         <h2 id="mobile-menu-title" class="text-lg font-semibold">Menú</h2>
         <button
           id="mobile-menu-close"
@@ -127,53 +127,58 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
         </button>
       </div>
 
-      <div class="px-4 py-4 flex flex-col gap-4">
-        <div class="relative" data-search-wrapper>
-          <form class="flex border border-gray-700 rounded-lg overflow-hidden relative z-30" role="search" action={`/${searchCine}/buscar`} method="GET" data-search-form-mobile>
-            <input
-              type="text"
-              name="q"
-              value={searchQuery}
-              placeholder="Buscar películas..."
-              class="flex-1 px-4 py-2 bg-gray-800 text-white focus:outline-none"
-              aria-label="Search movies"
-              data-search-input
-              autocomplete="off"
-            />
-            {searchQuery && (
+      {/* Scrollable area: search + links */}
+      <div class="overflow-y-auto flex-1 px-4 py-4">
+        <div class="flex flex-col gap-4">
+          <div class="relative" data-search-wrapper>
+            <form class="flex border border-gray-700 rounded-lg overflow-hidden relative z-30" role="search" action={`/${searchCine}/buscar`} method="GET" data-search-form-mobile>
+              <input
+                type="text"
+                name="q"
+                value={searchQuery}
+                placeholder="Buscar películas..."
+                class="flex-1 px-4 py-2 bg-gray-800 text-white focus:outline-none"
+                aria-label="Search movies"
+                data-search-input
+                autocomplete="off"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  data-clear-search
+                  class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 flex items-center border-r border-gray-700"
+                  aria-label="Limpiar búsqueda"
+                >
+                  <X class="h-4 w-4" />
+                </button>
+              )}
               <button
-                type="button"
-                data-clear-search
-                class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 flex items-center border-r border-gray-700"
-                aria-label="Limpiar búsqueda"
+                type="submit"
+                class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 flex items-center justify-center"
+                aria-label="Buscar"
               >
-                <X class="h-4 w-4" />
+                <Search class="h-5 w-5" />
               </button>
-            )}
-            <button
-              type="submit"
-              class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 flex items-center justify-center"
-              aria-label="Buscar"
-            >
-              <Search class="h-5 w-5" />
-            </button>
-          </form>
-          <ul
-            data-search-suggestions
-            class="hidden absolute top-0 left-0 right-0 z-20 bg-gray-800 rounded-lg border-x border-b border-gray-700 max-h-48 overflow-y-auto shadow-lg pt-10"
-          ></ul>
+            </form>
+            <ul
+              data-search-suggestions
+              class="hidden absolute top-0 left-0 right-0 z-20 bg-gray-800 rounded-lg border-x border-b border-gray-700 max-h-48 overflow-y-auto shadow-lg pt-10"
+            ></ul>
+          </div>
+          <a href="/watchlist" class="flex items-center hover:text-red-400 text-lg">
+            <Bookmark class="h-5 w-5 mr-2" />
+            Favoritos
+          </a>
+          <a href="/showtimes" class="flex items-center hover:text-red-400 text-lg">
+            <Clock class="h-5 w-5 mr-2" />
+            Cartelera
+          </a>
         </div>
-        <a href="/watchlist" class="flex items-center hover:text-red-400 text-lg">
-          <Bookmark class="h-5 w-5 mr-2" />
-          Favoritos
-        </a>
-        <a href="/showtimes" class="flex items-center hover:text-red-400 text-lg">
-          <Clock class="h-5 w-5 mr-2" />
-          Cartelera
-        </a>
-        <div>
-          <NavDropdown client:load />
-        </div>
+      </div>
+
+      {/* Fixed bottom: cine selector (outside overflow so dropdown is not clipped) */}
+      <div class="px-4 py-3 border-t border-gray-800 shrink-0">
+        <NavDropdown client:load />
       </div>
     </div>
   </div>
