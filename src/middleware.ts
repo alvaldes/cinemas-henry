@@ -1,21 +1,18 @@
 import { defineMiddleware } from "astro:middleware";
-import { defaultCines } from "@/lib/constants";
-
-const DEFAULT_CINE = "huajuapan";
+import { defaultCines, DEFAULT_CINE_VALUE } from "@/lib/constants";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Only handle root path
   if (context.url.pathname === "/") {
-    // Read selectedCine from cookie
-    const selectedCineCookie = context.cookies.get("selectedCine")?.value;
-    let cine = DEFAULT_CINE;
+    // Read selectedCine from cookie, set default if missing
+    let cine = context.cookies.get("selectedCine")?.value;
 
-    if (selectedCineCookie) {
-      // Validate the cookie value matches a known cine
-      const isValid = defaultCines.some((c) => c.value === selectedCineCookie);
-      if (isValid) {
-        cine = selectedCineCookie;
-      }
+    if (!cine || !defaultCines.some((c) => c.value === cine)) {
+      cine = DEFAULT_CINE_VALUE;
+      context.cookies.set("selectedCine", cine, {
+        path: "/",
+        maxAge: 365 * 24 * 60 * 60, // 1 year
+      });
     }
 
     return context.redirect(`/${cine}`);

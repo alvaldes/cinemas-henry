@@ -1,6 +1,33 @@
 import type { Cine } from "./types";
 
+export const DEFAULT_CINE_VALUE = "huajuapan";
+
 export const defaultCines: Cine[] = [
+  {
+    value: "huajuapan",
+    label: "Huajuapan",
+    nombre: "Henry  Huajuapan",
+    referencia: "Cinebox Huajuapan",
+    ip: "cnbxhuajuapan.dyndns.org",
+    dominio: "https://huajuapan.cinebox.mx",
+    url: "http://cnbxhuajuapan.dyndns.org/",
+    ultracine_id: "4014",
+    latitud: "3.387535",
+    longitud: "-76.536016",
+    localidad: "Cali",
+    provincia: "Valle del Cauca",
+    geofence_notification_radius: "300",
+    geofence_notification_time_refresh: "86400000",
+    ip_privada: null,
+    ip_api_complejo: "http://cnbxhuajuapan.dyndns.org/apicomplejo",
+    notificaciones: [
+      {
+        geofence_notification_tittle: "Los Mejores Estrenos",
+        geofence_notification_message: "¿Vamos al Cine? mira que pelis hay",
+        geofence_notification_imagen: "http://altoverde.cinesdino.com.ar/resources/images/logo.png"
+      }
+    ]
+  },
   {
     value: "lagos",
     label: "Lagos",
@@ -47,31 +74,6 @@ export const defaultCines: Cine[] = [
       {
         geofence_notification_tittle: "Cine para 2",
         geofence_notification_message: "El cine renovo la Cartelera",
-        geofence_notification_imagen: "http://altoverde.cinesdino.com.ar/resources/images/logo.png"
-      }
-    ]
-  },
-  {
-    value: "huajuapan",
-    label: "Huajuapan",
-    nombre: "Henry  Huajuapan",
-    referencia: "Cinebox Huajuapan",
-    ip: "cnbxhuajuapan.dyndns.org",
-    dominio: "https://huajuapan.cinebox.mx",
-    url: "http://cnbxhuajuapan.dyndns.org/",
-    ultracine_id: "4014",
-    latitud: "3.387535",
-    longitud: "-76.536016",
-    localidad: "Cali",
-    provincia: "Valle del Cauca",
-    geofence_notification_radius: "300",
-    geofence_notification_time_refresh: "86400000",
-    ip_privada: null,
-    ip_api_complejo: "http://cnbxhuajuapan.dyndns.org/apicomplejo",
-    notificaciones: [
-      {
-        geofence_notification_tittle: "Los Mejores Estrenos",
-        geofence_notification_message: "¿Vamos al Cine? mira que pelis hay",
         geofence_notification_imagen: "http://altoverde.cinesdino.com.ar/resources/images/logo.png"
       }
     ]

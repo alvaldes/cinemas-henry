@@ -3,9 +3,10 @@ import MainLayout from '@/layouts/main.astro';
 import DatePicker from '@/components/DatePicker.astro';
 import { renderMoviesGrid } from '@/lib/cartelera';
 import { titleCase } from '@/lib/utils';
+import { DEFAULT_CINE_VALUE } from '@/lib/constants';
 
-// Read cine from cookie, fallback to 'huajuapan'
-const cine = Astro.cookies.get('selectedCine')?.value ?? 'huajuapan';
+// Read cine from cookie, fallback to default
+const cine = Astro.cookies.get('selectedCine')?.value ?? DEFAULT_CINE_VALUE;
 const movieFilter = Astro.url.searchParams.get('movie');
 
 // Fetch all movies for this cine (server-side)

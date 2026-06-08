@@ -1,12 +1,12 @@
 ---
 import { Menu, X, Bookmark, Clock, Search } from '@lucide/astro';
 import NavDropdown from '@/components/NavDropdown.tsx';
-import { defaultCines } from '@/lib/constants';
+import { defaultCines, DEFAULT_CINE_VALUE } from '@/lib/constants';
 
 const pathCine = Astro.url.pathname.split('/')[1] ?? '';
 const searchCine = defaultCines.some((c) => c.value === pathCine)
   ? pathCine
-  : Astro.cookies.get('selectedCine')?.value ?? 'huajuapan';
+  : Astro.cookies.get('selectedCine')?.value ?? DEFAULT_CINE_VALUE;
 const searchQuery = Astro.url.searchParams.get('q') ?? '';
 ---
 <nav class="w-full bg-gray-900/50 text-white px-4">
