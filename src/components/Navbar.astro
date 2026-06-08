@@ -1,5 +1,5 @@
 ---
-import { Menu, X, Bookmark, Clock, Search } from '@lucide/astro';
+import { Menu, X, Bookmark, Clock, Search, Home } from '@lucide/astro';
 import NavDropdown from '@/components/NavDropdown.tsx';
 import { defaultCines, DEFAULT_CINE_VALUE } from '@/lib/constants';
 
@@ -165,6 +165,10 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
               class="hidden absolute top-0 left-0 right-0 z-20 bg-gray-800 rounded-lg border-x border-b border-gray-700 max-h-48 overflow-y-auto shadow-lg pt-10"
             ></ul>
           </div>
+          <a href="/" class="flex items-center hover:text-red-400 text-lg">
+            <Home class="h-5 w-5 mr-2" />
+            Inicio
+          </a>
           <a href="/watchlist" class="flex items-center hover:text-red-400 text-lg">
             <Bookmark class="h-5 w-5 mr-2" />
             Favoritos
