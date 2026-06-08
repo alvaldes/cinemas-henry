@@ -68,18 +68,30 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
     <NavDropdown client:load />
   </div>
 
-  {/* Hamburger (mobile) */}
-  <button
-    id="menu-toggle"
-    type="button"
-    class="md:hidden p-2 text-white hover:text-red-400"
-    aria-label="Abrir menú"
-    aria-expanded="false"
-    aria-controls="mobile-menu"
-  >
-    <span id="icon-menu"><Menu class="h-6 w-6" /></span>
-    <span id="icon-close" class="hidden"><X class="h-6 w-6" /></span>
-  </button>
+  {/* Mobile controls: search + hamburger (md: se ocultan ambos) */}
+  <div class="flex md:hidden items-center gap-1">
+    <button
+      id="search-toggle-mobile"
+      type="button"
+      class="p-2 text-white hover:text-red-400"
+      aria-label="Buscar películas"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <Search class="h-6 w-6" />
+    </button>
+    <button
+      id="menu-toggle"
+      type="button"
+      class="p-2 text-white hover:text-red-400"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span id="icon-menu"><Menu class="h-6 w-6" /></span>
+      <span id="icon-close" class="hidden"><X class="h-6 w-6" /></span>
+    </button>
+  </div>
 </div>
 
   {/* Mobile menu - compact modal that sits below the navbar */}
@@ -178,22 +190,38 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
 
 <script>
   const toggle = document.getElementById('menu-toggle');
+  const searchToggle = document.getElementById('search-toggle-mobile');
   const menu = document.getElementById('mobile-menu');
   const closeBtn = document.getElementById('mobile-menu-close');
   const backdrop = document.getElementById('mobile-menu-backdrop');
   const iconMenuWrap = document.getElementById('icon-menu');
   const iconCloseWrap = document.getElementById('icon-close');
 
-  function openMenu() {
+  function openMenu(focusSearch = false) {
     if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
     menu.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
     toggle.setAttribute('aria-expanded', 'true');
     toggle.setAttribute('aria-label', 'Cerrar menú');
+    if (searchToggle) {
+      searchToggle.setAttribute('aria-expanded', 'true');
+      searchToggle.setAttribute('aria-label', 'Cerrar menú');
+    }
     iconMenuWrap.classList.add('hidden');
     iconCloseWrap.classList.remove('hidden');
-    // Focus the close button so screen readers / keyboard users land in the modal
-    closeBtn?.focus();
+
+    if (focusSearch) {
+      // Force synchronous layout reflow so the input is focusable
+      // in the same call stack as the click event. This keeps the
+      // user-gesture context alive → mobile keyboard appears.
+      void menu.offsetHeight;
+      const mobileSearch = document.querySelector('#mobile-menu [data-search-input]');
+      mobileSearch?.focus();
+      mobileSearch?.scrollIntoView({ block: 'center' });
+    } else {
+      // Hamburger clicked → focus the close button so keyboard users land in the modal
+      closeBtn?.focus();
+    }
   }
 
   function closeMenu() {
@@ -204,7 +232,11 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
     toggle.setAttribute('aria-label', 'Abrir menú');
     iconMenuWrap.classList.remove('hidden');
     iconCloseWrap.classList.add('hidden');
-    // Return focus to the trigger
+    if (searchToggle) {
+      searchToggle.setAttribute('aria-expanded', 'false');
+      searchToggle.setAttribute('aria-label', 'Buscar películas');
+    }
+    // Return focus to the hamburger trigger
     toggle.focus();
   }
 
@@ -214,9 +246,21 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
       if (isOpen) {
         closeMenu();
       } else {
-        openMenu();
+        openMenu(false);
       }
     });
+
+    if (searchToggle) {
+      searchToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !menu.classList.contains('hidden');
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu(true);
+        }
+      });
+    }
 
     closeBtn.addEventListener('click', closeMenu);
     backdrop.addEventListener('click', closeMenu);
