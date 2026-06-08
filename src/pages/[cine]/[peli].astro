@@ -4,7 +4,7 @@ import { Clock } from '@lucide/astro';
 import DatePicker from '@/components/DatePicker.astro';
 import FavoriteButton from '@/components/FavoriteButton';
 import type { Movie } from '@/lib/types';
-import { parseDate, normalizeDate, formatDuration, titleCase } from '@/lib/utils';
+import { parseDate, normalizeDate, formatDuration, titleCase, formatToAmPm } from '@/lib/utils';
 
 // Obtener el parámetro de la URL
 const { cine, peli } = Astro.params;
@@ -118,7 +118,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
                     >
                       <span class="text-sm font-medium flex items-center">
                         <Clock class="h-5 w-5 mr-2" />
-                        {showtime.hour}
+                        {formatToAmPm(showtime.hour)}
                         </span>
                       <span class="text-sm text-blue-400">
                         {showtime.format}
@@ -166,8 +166,21 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
 </script>
 
 <script define:vars={{ cine, peliId: movie.id }}>
-  // Listen for date changes from the DatePicker
-  document.addEventListener('dateChange', async (event) => {
+  // Convert 24h "14:30" → "2:30 PM"
+  function toAmPm(hour) {
+    const [h, m] = hour.split(':').map(Number);
+    if (isNaN(h) || isNaN(m)) return hour;
+    return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h >= 12 ? 'PM' : 'AM');
+  }
+
+  // Guard: View Transitions keeps `document` alive, so inline scripts
+  // add duplicate listeners on each visit. HANDLER_ID prevents that.
+  const HANDLER_ID = 'peli-datechange';
+  if (!window.__dateChangeHandlers) window.__dateChangeHandlers = new Set();
+  if (!window.__dateChangeHandlers.has(HANDLER_ID)) {
+    window.__dateChangeHandlers.add(HANDLER_ID);
+
+    document.addEventListener('dateChange', async (event) => {
     const newDate = event.detail.date;
     const dateStr = newDate.toISOString().split('T')[0];
 
@@ -198,7 +211,7 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
-              ${showtime.hour}
+              ${toAmPm(showtime.hour)}
             </span>
             <span class="text-sm text-blue-400">${showtime.format}</span>
             <span class="bg-blue-400/10 text-blue-800 border border-blue-900 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">
@@ -213,5 +226,6 @@ const isUpcoming = normalizeDate(releaseDateObj) > today;
       console.error("Error updating showtimes:", error);
     }
   });
+  }
 </script>
 

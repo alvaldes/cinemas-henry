@@ -21,7 +21,9 @@ const gridHtml = renderMoviesGrid(filtered, cine);
 
 <MainLayout content={{ title: 'Cartelera' }}>
   <section class="container mx-auto text-white py-6">
-    <h1 class="text-2xl md:text-3xl font-bold mb-6">Cartelera</h1>
+    <h1 class="text-2xl md:text-3xl font-bold flex items-center mb-6">
+      <span class="text-yellow-400 mr-1 text-3xl md:text-4xl">|</span> Cartelera
+    </h1>
 
     <div class="mb-6">
       <DatePicker initialDate={new Date()} />
@@ -42,52 +44,61 @@ const gridHtml = renderMoviesGrid(filtered, cine);
     return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h >= 12 ? 'PM' : 'AM');
   }
 
-  document.addEventListener('dateChange', async (event) => {
-    const newDate = event.detail?.date;
-    if (!newDate) return;
+  // Guard: View Transitions keeps `document` alive across navigations,
+  // so inline scripts would add duplicate listeners on each visit.
+  // Using HANDLER_ID ensures exactly ONE handler per page.
+  const HANDLER_ID = 'showtimes-datechange';
+  if (!window.__dateChangeHandlers) window.__dateChangeHandlers = new Set();
+  if (!window.__dateChangeHandlers.has(HANDLER_ID)) {
+    window.__dateChangeHandlers.add(HANDLER_ID);
 
-    const dateStr = newDate.toISOString().split('T')[0];
-    if (!gridEl) return;
+    document.addEventListener('dateChange', async (event) => {
+      const newDate = event.detail?.date;
+      if (!newDate) return;
 
-    const previousHtml = gridEl.innerHTML;
-    gridEl.innerHTML = '<div class="w-full text-center py-8"><p class="text-gray-400">Cargando funciones...</p></div>';
+      const dateStr = newDate.toISOString().split('T')[0];
+      if (!gridEl) return;
 
-    try {
-      const response = await fetch(`/api/peliculas/${cine}.json?date=${dateStr}`);
+      const previousHtml = gridEl.innerHTML;
+      gridEl.innerHTML = '<div class="w-full text-center py-8"><p class="text-gray-400">Cargando funciones...</p></div>';
 
-      if (!response.ok) {
-        console.error('Error al obtener funciones para la nueva fecha');
+      try {
+        const response = await fetch(`/api/peliculas/${cine}.json?date=${dateStr}`);
+
+        if (!response.ok) {
+          console.error('Error al obtener funciones para la nueva fecha');
+          gridEl.innerHTML = previousHtml;
+          return;
+        }
+
+        const movies = await response.json();
+
+        if (!movies || movies.length === 0) {
+          gridEl.innerHTML = '<div class="w-full text-center text-gray-400 py-12">No hay películas disponibles para esta fecha</div>';
+          return;
+        }
+
+        const entries = movies
+          .filter((m) => m.showtimes?.length > 0)
+          .flatMap((movie) =>
+            movie.showtimes.map((st) => ({ movie, st }))
+          )
+          .sort((a, b) => a.st.hour.localeCompare(b.st.hour));
+
+        gridEl.innerHTML = entries.map(({ movie, st }) => `
+            <div class="flex items-center gap-3 px-2 py-3.5 border-b border-gray-800 hover:bg-white/5 transition-colors">
+              <span class="font-medium text-sm text-yellow-400 w-16 shrink-0">${toAmPm(st.hour)}</span>
+              <a href="/${cine}/${encodeURIComponent(movie.id)}" class="shrink-0">
+                <img src="${movie.img_primary}" alt="" class="w-12 md:w-14 py-2 rounded aspect-[2/3] object-cover" loading="lazy" />
+              </a>
+              <a href="/${cine}/${encodeURIComponent(movie.id)}" class="text-sm text-white hover:text-blue-400 line-clamp-1 flex-1 min-w-0 capitalize no-underline">${movie.title}</a>
+              <span class="text-sm text-blue-400 shrink-0">${st.format}</span>
+              <span class="${st.subtitled ? 'bg-blue-400/10 text-blue-300' : 'bg-gray-400/10 text-gray-400'} text-sm px-3.5 py-1.5 rounded-full shrink-0 leading-none">${st.subtitled ? 'SUB' : 'Dob'}</span>
+            </div>`).join('');
+      } catch (error) {
+        console.error('Error al actualizar funciones:', error);
         gridEl.innerHTML = previousHtml;
-        return;
       }
-
-      const movies = await response.json();
-
-      if (!movies || movies.length === 0) {
-        gridEl.innerHTML = '<div class="w-full text-center text-gray-400 py-12">No hay películas disponibles para esta fecha</div>';
-        return;
-      }
-
-      const entries = movies
-        .filter((m) => m.showtimes?.length > 0)
-        .flatMap((movie) =>
-          movie.showtimes.map((st) => ({ movie, st }))
-        )
-        .sort((a, b) => a.st.hour.localeCompare(b.st.hour));
-
-      gridEl.innerHTML = entries.map(({ movie, st }) => `
-          <div class="flex items-center gap-3 px-2 py-3.5 border-b border-gray-800 hover:bg-white/5 transition-colors">
-            <span class="font-medium text-sm text-yellow-400 w-16 shrink-0">${toAmPm(st.hour)}</span>
-            <a href="/${cine}/${encodeURIComponent(movie.id)}" class="shrink-0">
-              <img src="${movie.img_primary}" alt="" class="w-12 md:w-14 py-2 rounded aspect-[2/3] object-cover" loading="lazy" />
-            </a>
-            <a href="/${cine}/${encodeURIComponent(movie.id)}" class="text-sm text-white hover:text-blue-400 line-clamp-1 flex-1 min-w-0 capitalize no-underline">${movie.title}</a>
-            <span class="text-sm text-blue-400 shrink-0">${st.format}</span>
-            <span class="${st.subtitled ? 'bg-blue-400/10 text-blue-300' : 'bg-gray-400/10 text-gray-400'} text-sm px-3.5 py-1.5 rounded-full shrink-0 leading-none">${st.subtitled ? 'SUB' : 'Dob'}</span>
-          </div>`).join('');
-    } catch (error) {
-      console.error('Error al actualizar funciones:', error);
-      gridEl.innerHTML = previousHtml;
-    }
-  });
+    });
+  }
 </script>

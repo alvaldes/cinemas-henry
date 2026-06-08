@@ -11,7 +11,7 @@ let error: string | null = null;
 const today = new Date();
 const formattedToday = today.toLocaleDateString('en-CA');
 ---
-<form class="space-y-4">
+<form class="space-y-4" autocomplete="off">
   <input
     type="date"
     id="dob"
@@ -27,17 +27,24 @@ const formattedToday = today.toLocaleDateString('en-CA');
   const dateInput = document.getElementById('dob');
 
   if (dateInput) {
-    dateInput.addEventListener('change', (event) => {
-      const target = event.target;
-      const selectedDate = target.value;
+    // Reset to today on every page load — browser often preserves previous value
+    // (refreshes, back/forward cache, View Transitions)
+    const today = new Date().toLocaleDateString('en-CA');
+    dateInput.value = today;
+
+    // Use both 'change' and 'input' for broader browser compatibility
+    function onDateChange() {
+      const selectedDate = dateInput.value;
       const dateChangeEvent = new CustomEvent('dateChange', {
         detail: { date: new Date(selectedDate) },
         bubbles: true,
         composed: true,
       });
-      // Dispatch on document so any listener can catch it
       document.dispatchEvent(dateChangeEvent);
-    });
+    }
+
+    dateInput.addEventListener('change', onDateChange);
+    dateInput.addEventListener('input', onDateChange);
   } else {
     console.error("The element with id 'dob' was not found.");
   }
