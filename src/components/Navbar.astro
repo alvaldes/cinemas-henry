@@ -194,88 +194,104 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
 </script>
 
 <script>
-  const toggle = document.getElementById('menu-toggle');
-  const searchToggle = document.getElementById('search-toggle-mobile');
-  const menu = document.getElementById('mobile-menu');
-  const closeBtn = document.getElementById('mobile-menu-close');
-  const backdrop = document.getElementById('mobile-menu-backdrop');
-  const iconMenuWrap = document.getElementById('icon-menu');
-  const iconCloseWrap = document.getElementById('icon-close');
+  // Re-init mobile menu on every page load AND every View Transition navigation.
+  // Without this, Astro's client-side navigation swaps the DOM but inline
+  // scripts don't re-run, leaving new elements without event listeners.
+  let menuController = null;
 
-  function openMenu(focusSearch = false) {
-    if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
-    menu.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
-    toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', 'Cerrar menú');
-    if (searchToggle) {
-      searchToggle.setAttribute('aria-expanded', 'true');
-      searchToggle.setAttribute('aria-label', 'Cerrar menú');
-    }
-    iconMenuWrap.classList.add('hidden');
-    iconCloseWrap.classList.remove('hidden');
+  document.addEventListener('astro:page-load', () => {
+    // Abort stale listeners from the previous navigation
+    menuController?.abort();
+    menuController = new AbortController();
+    const signal = menuController.signal;
 
-    if (focusSearch) {
-      // Force synchronous layout reflow so the input is focusable
-      // in the same call stack as the click event. This keeps the
-      // user-gesture context alive → mobile keyboard appears.
-      void menu.offsetHeight;
-      const mobileSearch = document.querySelector('#mobile-menu [data-search-input]');
-      mobileSearch?.focus();
-      mobileSearch?.scrollIntoView({ block: 'center' });
-    } else {
-      // Hamburger clicked → focus the close button so keyboard users land in the modal
-      closeBtn?.focus();
-    }
-  }
+    // Grab fresh DOM references (old ones were detached by the View Transition)
+    const toggle = document.getElementById('menu-toggle');
+    const searchToggle = document.getElementById('search-toggle-mobile');
+    const menu = document.getElementById('mobile-menu');
+    const closeBtn = document.getElementById('mobile-menu-close');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const iconMenuWrap = document.getElementById('icon-menu');
+    const iconCloseWrap = document.getElementById('icon-close');
 
-  function closeMenu() {
-    if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
-    menu.classList.add('hidden');
+    // Clean up stale state that may have survived the transition
     document.body.classList.remove('overflow-hidden');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Abrir menú');
-    iconMenuWrap.classList.remove('hidden');
-    iconCloseWrap.classList.add('hidden');
+    if (menu) menu.classList.add('hidden');
+    if (iconMenuWrap) iconMenuWrap.classList.remove('hidden');
+    if (iconCloseWrap) iconCloseWrap.classList.add('hidden');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú');
+    }
     if (searchToggle) {
       searchToggle.setAttribute('aria-expanded', 'false');
       searchToggle.setAttribute('aria-label', 'Buscar películas');
     }
-    // Return focus to the hamburger trigger
-    toggle.focus();
-  }
 
-  if (toggle && menu && closeBtn && backdrop) {
-    toggle.addEventListener('click', () => {
-      const isOpen = !menu.classList.contains('hidden');
-      if (isOpen) {
-        closeMenu();
-      } else {
-        openMenu(false);
+    function openMenu(focusSearch = false) {
+      if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
+      menu.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Cerrar menú');
+      if (searchToggle) {
+        searchToggle.setAttribute('aria-expanded', 'true');
+        searchToggle.setAttribute('aria-label', 'Cerrar menú');
       }
-    });
+      iconMenuWrap.classList.add('hidden');
+      iconCloseWrap.classList.remove('hidden');
 
-    if (searchToggle) {
-      searchToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = !menu.classList.contains('hidden');
-        if (isOpen) {
-          closeMenu();
-        } else {
-          openMenu(true);
-        }
-      });
+      if (focusSearch) {
+        void menu.offsetHeight;
+        const mobileSearch = document.querySelector('#mobile-menu [data-search-input]');
+        mobileSearch?.focus();
+        mobileSearch?.scrollIntoView({ block: 'center' });
+      } else {
+        closeBtn?.focus();
+      }
     }
 
-    closeBtn.addEventListener('click', closeMenu);
-    backdrop.addEventListener('click', closeMenu);
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
-        closeMenu();
+    function closeMenu() {
+      if (!menu || !toggle || !iconMenuWrap || !iconCloseWrap) return;
+      menu.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú');
+      iconMenuWrap.classList.remove('hidden');
+      iconCloseWrap.classList.add('hidden');
+      if (searchToggle) {
+        searchToggle.setAttribute('aria-expanded', 'false');
+        searchToggle.setAttribute('aria-label', 'Buscar películas');
       }
-    });
-  }
+      toggle.focus();
+    }
+
+    if (toggle && menu && closeBtn && backdrop) {
+      toggle.addEventListener('click', () => {
+        const isOpen = !menu.classList.contains('hidden');
+        if (isOpen) closeMenu();
+        else openMenu(false);
+      }, { signal });
+
+      if (searchToggle) {
+        searchToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = !menu.classList.contains('hidden');
+          if (isOpen) closeMenu();
+          else openMenu(true);
+        }, { signal });
+      }
+
+      closeBtn.addEventListener('click', closeMenu, { signal });
+      backdrop.addEventListener('click', closeMenu, { signal });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
+          closeMenu();
+        }
+      }, { signal });
+    }
+  });
 </script>
 
 <script>
