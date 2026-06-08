@@ -18,33 +18,41 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
 
   {/* Search Input (desktop) */}
   <div class="hidden md:block flex-1 mx-4">
-    <form class="flex" role="search" action={`/${searchCine}/buscar`} method="GET">
-      <input
-        type="text"
-        name="q"
-        value={searchQuery}
-        placeholder="Buscar películas..."
-        class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
-        aria-label="Search movies"
-      />
-      {searchQuery && (
+    <div class="relative" data-search-wrapper>
+      <form class="flex border border-gray-700 rounded-lg overflow-hidden relative z-30" role="search" action={`/${searchCine}/buscar`} method="GET" data-search-form>
+        <input
+          type="text"
+          name="q"
+          value={searchQuery}
+          placeholder="Buscar películas..."
+          class="flex-1 px-4 py-2 bg-gray-800 text-white focus:outline-none"
+          aria-label="Search movies"
+          data-search-input
+          autocomplete="off"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            data-clear-search
+            class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 flex items-center border-r border-gray-700"
+            aria-label="Limpiar búsqueda"
+          >
+            <X class="h-4 w-4" />
+          </button>
+        )}
         <button
-          type="button"
-          data-clear-search
-          class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 flex items-center border-r border-gray-700"
-          aria-label="Limpiar búsqueda"
+          type="submit"
+          class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 flex items-center justify-center"
+          aria-label="Buscar"
         >
-          <X class="h-4 w-4" />
+          <Search class="h-5 w-5" />
         </button>
-      )}
-      <button
-        type="submit"
-        class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
-        aria-label="Buscar"
-      >
-        <Search class="h-5 w-5" />
-      </button>
-    </form>
+      </form>
+      <ul
+        data-search-suggestions
+        class="hidden absolute top-0 left-0 right-0 z-20 bg-gray-800 rounded-lg border-x border-b border-gray-700 max-h-60 overflow-y-auto shadow-lg pt-10"
+      ></ul>
+    </div>
   </div>
 
   {/* Enlaces (desktop) */}
@@ -108,33 +116,41 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
       </div>
 
       <div class="px-4 py-4 flex flex-col gap-4">
-        <form class="flex" role="search" action={`/${searchCine}/buscar`} method="GET">
-          <input
-            type="text"
-            name="q"
-            value={searchQuery}
-            placeholder="Buscar películas..."
-            class="w-full px-4 py-2 rounded-l bg-gray-800 text-white focus:outline-none"
-            aria-label="Search movies"
-          />
-          {searchQuery && (
+        <div class="relative" data-search-wrapper>
+          <form class="flex border border-gray-700 rounded-lg overflow-hidden relative z-30" role="search" action={`/${searchCine}/buscar`} method="GET" data-search-form-mobile>
+            <input
+              type="text"
+              name="q"
+              value={searchQuery}
+              placeholder="Buscar películas..."
+              class="flex-1 px-4 py-2 bg-gray-800 text-white focus:outline-none"
+              aria-label="Search movies"
+              data-search-input
+              autocomplete="off"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                data-clear-search
+                class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 flex items-center border-r border-gray-700"
+                aria-label="Limpiar búsqueda"
+              >
+                <X class="h-4 w-4" />
+              </button>
+            )}
             <button
-              type="button"
-              data-clear-search
-              class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 flex items-center border-r border-gray-700"
-              aria-label="Limpiar búsqueda"
+              type="submit"
+              class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 flex items-center justify-center"
+              aria-label="Buscar"
             >
-              <X class="h-4 w-4" />
+              <Search class="h-5 w-5" />
             </button>
-          )}
-          <button
-            type="submit"
-            class="bg-gray-800 hover:bg-gray-700 text-gray-500 px-4 py-2 rounded-r flex items-center justify-center"
-            aria-label="Buscar"
-          >
-            <Search class="h-5 w-5" />
-          </button>
-        </form>
+          </form>
+          <ul
+            data-search-suggestions
+            class="hidden absolute top-0 left-0 right-0 z-20 bg-gray-800 rounded-lg border-x border-b border-gray-700 max-h-48 overflow-y-auto shadow-lg pt-10"
+          ></ul>
+        </div>
         <a href="/watchlist" class="flex items-center hover:text-red-400 text-lg">
           <Bookmark class="h-5 w-5 mr-2" />
           Favoritos
@@ -214,16 +230,193 @@ const searchQuery = Astro.url.searchParams.get('q') ?? '';
 </script>
 
 <script>
-  // Clear search input when the X button is clicked
+  const SEARCH_HISTORY_KEY = "cinemas-henry:search-history";
+  const MAX_SUGGESTIONS = 8;
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  function readHistory() {
+    try {
+      const raw = localStorage.getItem(SEARCH_HISTORY_KEY);
+      if (!raw) return {};
+      return JSON.parse(raw);
+    } catch { return {}; }
+  }
+
+  function saveQuery(cine, query) {
+    if (!query.trim()) return;
+    const all = readHistory();
+    const prev = all[cine] || [];
+    const filtered = prev.filter(q => q.toLowerCase() !== query.toLowerCase());
+    all[cine] = [query, ...filtered].slice(0, 10);
+    try { localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(all)); }
+    catch { /* ignore */ }
+  }
+
+  function getSuggestions(cine, input) {
+    const q = input.toLowerCase().trim();
+    const all = readHistory();
+    const entries = all[cine] || [];
+    if (!q) return entries.slice(0, MAX_SUGGESTIONS);
+    return entries.filter(e => e.toLowerCase().includes(q)).slice(0, MAX_SUGGESTIONS);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build suggestion items
+  // ---------------------------------------------------------------------------
+
+  function renderSuggestions(items, inputEl) {
+    const container = inputEl.closest('[data-search-wrapper]')?.querySelector('[data-search-suggestions]');
+    if (!container) return;
+
+    if (items.length === 0) {
+      container.classList.add('hidden');
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = items.map(item =>
+      `<li class="px-4 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer flex items-center gap-2 border-b border-gray-700 last:border-0" data-suggestion="${item.replace(/"/g, '&quot;')}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="truncate">${item}</span>
+      </li>`
+    ).join('');
+    container.classList.remove('hidden');
+  }
+
+  function showSuggestions(inputEl) {
+    const cine = inputEl.closest('form')?.getAttribute('action')?.split('/')[1] || '';
+    const items = getSuggestions(cine, inputEl.value);
+    renderSuggestions(items, inputEl);
+  }
+
+  function hideSuggestions(inputEl) {
+    const container = inputEl.closest('[data-search-wrapper]')?.querySelector('[data-search-suggestions]');
+    if (container) {
+      container.classList.add('hidden');
+      container.innerHTML = '';
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Persist search on form submit
+  // ---------------------------------------------------------------------------
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!form.matches('[data-search-form], [data-search-form-mobile]')) return;
+    const input = form.querySelector('[data-search-input]');
+    if (!input || !input.value.trim()) return;
+    const cine = form.getAttribute('action')?.split('/')[1] || '';
+    saveQuery(cine, input.value.trim());
+  });
+
+  // ---------------------------------------------------------------------------
+  // Show/hide suggestions on focus / input
+  // ---------------------------------------------------------------------------
+
+  document.addEventListener('focusin', (e) => {
+    const input = e.target.closest('[data-search-input]');
+    if (!input) return;
+    // Small delay so the input has its value before we render
+    setTimeout(() => showSuggestions(input), 0);
+  });
+
+  document.addEventListener('input', (e) => {
+    const input = e.target.closest('[data-search-input]');
+    if (!input) return;
+    showSuggestions(input);
+  });
+
+  // ---------------------------------------------------------------------------
+  // Click on suggestion → fill input, hide dropdown, submit
+  // ---------------------------------------------------------------------------
+
+  document.addEventListener('mousedown', (e) => {
+    const li = e.target.closest('[data-suggestion]');
+    if (!li) return;
+    const text = li.getAttribute('data-suggestion') || li.textContent.trim();
+    const container = li.closest('[data-search-suggestions]');
+    if (!container) return;
+    const input = container.parentElement.querySelector('[data-search-input]');
+    if (!input) return;
+    input.value = text;
+    hideSuggestions(container);
+    // Submit the form
+    const form = input.closest('form');
+    if (form) form.submit();
+  });
+
+  // ---------------------------------------------------------------------------
+  // Click outside → hide suggestions
+  // ---------------------------------------------------------------------------
+
+  document.addEventListener('click', (e) => {
+    const input = e.target.closest('[data-search-input]');
+    const suggestion = e.target.closest('[data-search-suggestions]');
+    if (input || suggestion) return;
+    document.querySelectorAll('[data-search-suggestions]').forEach(el => {
+      el.classList.add('hidden');
+      el.innerHTML = '';
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Clear search → also hide suggestions
+  // ---------------------------------------------------------------------------
+
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-clear-search]');
     if (!btn) return;
     const form = btn.closest('form');
     if (!form) return;
-    const input = form.querySelector('input[name="q"]');
+    const input = form.querySelector('[data-search-input]');
     if (input) {
       input.value = '';
       input.focus();
+      setTimeout(() => showSuggestions(input), 0);
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Keyboard navigation (down / up / enter)
+  // ---------------------------------------------------------------------------
+
+  document.addEventListener('keydown', (e) => {
+    const input = e.target.closest('[data-search-input]');
+    if (!input) return;
+
+    const container = input.closest('[data-search-wrapper]')?.querySelector('[data-search-suggestions]');
+    if (!container || container.classList.contains('hidden')) return;
+
+    const items = container.querySelectorAll('[data-suggestion]');
+    if (items.length === 0) return;
+
+    // Find currently highlighted
+    let idx = Array.from(items).findIndex(li => li.classList.contains('bg-gray-700'));
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      items.forEach(li => li.classList.remove('bg-gray-700'));
+      idx = Math.min(idx + 1, items.length - 1);
+      items[idx].classList.add('bg-gray-700');
+      items[idx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      items.forEach(li => li.classList.remove('bg-gray-700'));
+      idx = idx <= 0 ? items.length - 1 : idx - 1;
+      items[idx].classList.add('bg-gray-700');
+      items[idx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && idx >= 0) {
+      e.preventDefault();
+      input.value = items[idx].getAttribute('data-suggestion') || items[idx].textContent.trim();
+      hideSuggestions(container);
+      const form = input.closest('form');
+      if (form) form.submit();
+    } else if (e.key === 'Escape') {
+      hideSuggestions(container);
     }
   });
 </script>
