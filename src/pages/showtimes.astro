@@ -2,9 +2,11 @@
 import MainLayout from '@/layouts/main.astro';
 import DatePicker from '@/components/DatePicker.astro';
 import { renderMoviesGrid } from '@/lib/cartelera';
+import { titleCase } from '@/lib/utils';
 
 // Read cine from cookie, fallback to 'huajuapan'
 const cine = Astro.cookies.get('selectedCine')?.value ?? 'huajuapan';
+const movieFilter = Astro.url.searchParams.get('movie');
 
 // Fetch all movies for this cine (server-side)
 const apiUrl = `${Astro.url.origin}/api/peliculas/${cine}.json`;
@@ -16,20 +18,32 @@ if (!response.ok) {
 
 const movies = await response.json();
 const filtered = movies.filter((m: any) => m.showtimes?.length > 0);
-const gridHtml = renderMoviesGrid(filtered, cine);
+
+let gridMovies = filtered;
+let pageTitle = 'Cartelera';
+
+if (movieFilter) {
+  const found = filtered.find((m: any) => m.id === movieFilter);
+  if (found) {
+    gridMovies = [found];
+    pageTitle = `Cartelera de ${titleCase(found.title)}`;
+  }
+}
+
+const gridHtml = renderMoviesGrid(gridMovies, cine);
 ---
 
-<MainLayout content={{ title: 'Cartelera' }}>
+<MainLayout content={{ title: pageTitle }}>
   <section class="container mx-auto text-white py-6">
     <h1 class="text-2xl md:text-3xl font-bold flex items-center mb-6">
-      <span class="text-yellow-400 mr-1 text-3xl md:text-4xl">|</span> Cartelera
+      <span class="text-yellow-400 mr-1 text-3xl md:text-4xl">|</span> {pageTitle}
     </h1>
 
     <div class="mb-6">
       <DatePicker initialDate={new Date()} />
     </div>
 
-    <div id="showtimes-grid" class="flex flex-col" data-cine={cine} set:html={gridHtml}></div>
+    <div id="showtimes-grid" class="flex flex-col" data-cine={cine} data-movie-filter={movieFilter ?? ''} set:html={gridHtml}></div>
   </section>
 </MainLayout>
 
@@ -37,6 +51,7 @@ const gridHtml = renderMoviesGrid(filtered, cine);
   // Same pattern as [peli].astro: inline script, no imports, reads from data attribute
   const gridEl = document.getElementById('showtimes-grid');
   const cine = gridEl?.getAttribute('data-cine') ?? 'huajuapan';
+  const movieFilter = gridEl?.getAttribute('data-movie-filter') ?? '';
 
   function toAmPm(hour) {
     const [h, m] = hour.split(':').map(Number);
@@ -73,13 +88,19 @@ const gridHtml = renderMoviesGrid(filtered, cine);
 
         const movies = await response.json();
 
-        if (!movies || movies.length === 0) {
-          gridEl.innerHTML = '<div class="w-full text-center text-gray-400 py-12">No hay películas disponibles para esta fecha</div>';
+        // Filter by movie if we're in single-movie mode
+        const allWithShowtimes = movies.filter((m) => m.showtimes?.length > 0);
+        let targetMovies = allWithShowtimes;
+        if (movieFilter) {
+          targetMovies = allWithShowtimes.filter((m) => m.id === movieFilter);
+        }
+
+        if (!targetMovies || targetMovies.length === 0) {
+          gridEl.innerHTML = '<div class="w-full text-center text-gray-400 py-12">No hay funciones disponibles para esta fecha</div>';
           return;
         }
 
-        const entries = movies
-          .filter((m) => m.showtimes?.length > 0)
+        const entries = targetMovies
           .flatMap((movie) =>
             movie.showtimes.map((st) => ({ movie, st }))
           )
