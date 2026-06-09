@@ -8,9 +8,10 @@ import { Image } from 'astro:assets';
 type Props = {
   movie: Movie;
   cine: string;
+  isFirst?: boolean;
 };
 
-const { movie, cine } = Astro.props;
+const { movie, cine, isFirst = false } = Astro.props;
 ---
 
 <article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
@@ -21,6 +22,8 @@ const { movie, cine } = Astro.props;
         alt={`Poster de la película ${movie.title}`} 
         width={192} 
         height={288}
+        loading={isFirst ? "eager" : "lazy"}
+        fetchpriority={isFirst ? "high" : "auto"}
         class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" 
         transition:name={`poster-${movie.id}`} 
       />

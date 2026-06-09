@@ -20,12 +20,12 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
       slides-per-view="1" 
       class="mySwiper"
     >
-      {videos.map((video: Movie) => (
+      {videos.map((video: Movie, index) => (
         <swiper-slide class="relative">
           <div class="aspect-video w-full overflow-hidden rounded-lg">
             <lite-youtube
               videoid={video.trailer.split("/").pop()}
-              autoload
+              autoload={index === 0}
               autopause
               posterquality="maxresdefault"
               class="w-full h-full"
@@ -38,6 +38,8 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
                 alt={`Poster de ${video.title}`}
                 width={200}
                 height={300}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchpriority={index === 0 ? "high" : "auto"}
                 class="rounded object-cover w-auto h-24 sm:h-48 transition-transform duration-300 group-hover:scale-105"
               />
               <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded">
