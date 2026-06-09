@@ -3,6 +3,7 @@ import { Clock, Timer, Expand } from '@lucide/astro';
 import type { Movie } from '@/lib/types';
 import { formatDuration } from '@/lib/utils';
 import PosterFavoriteButton from '@/components/PosterFavoriteButton';
+import { Image } from 'astro:assets';
 
 type Props = {
   movie: Movie;
@@ -14,8 +15,15 @@ const { movie, cine } = Astro.props;
 
 <article class="bg-neutral-900 rounded-2xl shadow-md w-48 overflow-hidden">
   <div class="relative group overflow-hidden">
-    <a href={`/${cine}/${encodeURIComponent(movie.id)}`}>
-      <img src={movie.img_primary} alt={movie.id} class="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105" transition:name={`poster-${movie.id}`} />
+    <a href={`/${cine}/${encodeURIComponent(movie.id)}`} class="block aspect-[2/3] w-full overflow-hidden">
+      <Image 
+        src={movie.img_primary} 
+        alt={`Poster de la película ${movie.title}`} 
+        width={192} 
+        height={288}
+        class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" 
+        transition:name={`poster-${movie.id}`} 
+      />
       <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
         <Expand class="h-8 w-8 text-white" />
       </div>

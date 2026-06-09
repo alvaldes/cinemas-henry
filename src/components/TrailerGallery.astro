@@ -4,6 +4,7 @@ import type { Movie } from "@/lib/types";
 import { Expand } from '@lucide/astro';
 import { formatDuration } from '@/lib/utils';
 import IconFavoriteButton from '@/components/IconFavoriteButton';
+import { Image } from 'astro:assets';
 import 'swiper/css';
 
 const { videos } = Astro.props as { videos: Movie[] };
@@ -21,19 +22,23 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
       class="mySwiper"
     >
       {videos.map((video: Movie) => (
-        <swiper-slide>
-          <lite-youtube
-            videoid={video.trailer.split("/").pop()}
-            autoload
-            autopause
-            posterquality="maxresdefault"
-          class="w-full h-auto ml-8 rounded-lg overflow-hidden"
-          ></lite-youtube>
+        <swiper-slide class="relative">
+          <div class="aspect-video w-full overflow-hidden rounded-lg">
+            <lite-youtube
+              videoid={video.trailer.split("/").pop()}
+              autoload
+              autopause
+              posterquality="maxresdefault"
+              class="w-full h-full"
+            ></lite-youtube>
+          </div>
           <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-0 w-full max-w-dvw">
             <a href={`/${cine}/${encodeURIComponent(video.id)}`} class="inline-block cursor-pointer relative group overflow-hidden rounded">
-              <img
+              <Image
                 src={video.img_primary}
-                alt="Poster"
+                alt={`Poster de ${video.title}`}
+                width={200}
+                height={300}
                 class="rounded object-cover w-auto h-24 sm:h-48 transition-transform duration-300 group-hover:scale-105"
               />
               <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded">
@@ -69,7 +74,13 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
       {videos.map((video: Movie) => (
         <swiper-slide class="opacity-40">
           <div class="flex space-x-2 cursor-pointer hover:bg-white/10 p-2 rounded">
-            <img src={video.img_primary} class=`object-cover w-12 h-auto flex items-center justify-center rounded`/>
+            <Image 
+              src={video.img_primary} 
+              alt={`Miniatura de ${video.title}`} 
+              width={48} 
+              height={72}
+              class="object-cover w-12 h-18 rounded flex-shrink-0" 
+            />
             <div class="flex flex-col items-start">
               <p class="text-xs"> ▶ {formatDuration(video.duration)}</p>
               <p class="font-bold text-sm capitalize">{video.title}</p>
