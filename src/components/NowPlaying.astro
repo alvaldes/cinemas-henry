@@ -13,7 +13,7 @@ const { movies } = Astro.props;
 const cine = Astro.url.pathname.split('/')[1] ?? '';
 ---
 
-<section class="py-6 text-white max-w-dvw w-full mr-2">
+<section class="py-6 text-white w-full px-0 overflow-visible relative">
   <div class="mb-4">
     <h2 class="text-lg font-semibold flex items-center cursor-pointer">
       <span class="text-yellow-400 mr-1 text-xl">|</span> En Cines
@@ -21,20 +21,57 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
     </h2>
   </div>
 
-  <swiper-container 
-    class="mySwiper max-w-dvw w-11/12"
-    navigation="true"
-    space-between="20"
-    slides-per-view="auto"
-  >
-    {movies.map((movie: Movie) => (
-      <swiper-slide class="!w-auto">
-        <MovieCard movie={movie} cine={cine} />
-      </swiper-slide>
-    ))}
-  </swiper-container>
+  <div class="relative group">
+    <!-- Custom Floating Navigation -->
+    <button 
+      id="swiper-prev" 
+      class="absolute left-[-30px] top-1/2 -translate-y-1/2 z-50 p-2 bg-yellow-400 text-black rounded-full shadow-xl hover:bg-yellow-300 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+      aria-label="Previous slide"
+    >
+      <ChevronRight class="h-6 w-6 rotate-180" />
+    </button>
+
+    <button 
+      id="swiper-next" 
+      class="absolute right-[-30px] top-1/2 -translate-y-1/2 z-50 p-2 bg-yellow-400 text-black rounded-full shadow-xl hover:bg-yellow-300 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+      aria-label="Next slide"
+    >
+      <ChevronRight class="h-6 w-6" />
+    </button>
+
+    <swiper-container 
+      id="now-playing-swiper"
+      class="mySwiper w-full"
+      navigation="false"
+      space-between="24"
+      slides-per-view="auto"
+      breakpoints='{"320": {"spaceBetween": 16}, "640": {"spaceBetween": 24}, "1024": {"spaceBetween": 32}}'
+    >
+      {movies.map((movie: Movie) => (
+        <swiper-slide class="!w-auto px-1">
+          <MovieCard movie={movie} cine={cine} />
+        </swiper-slide>
+      ))}
+    </swiper-container>
+  </div>
 
   <script>
     import 'swiper/element/bundle';
+    
+    async function initCustomNav() {
+      const swiperEl = document.querySelector('#now-playing-swiper');
+      const prevBtn = document.querySelector('#swiper-prev');
+      const nextBtn = document.querySelector('#swiper-next');
+
+      if (!swiperEl || !prevBtn || !nextBtn) return;
+
+      const swiper = swiperEl.swiper;
+
+      prevBtn.addEventListener('click', () => swiper.slidePrev());
+      nextBtn.addEventListener('click', () => swiper.slideNext());
+    }
+
+    document.addEventListener('DOMContentLoaded', initCustomNav);
+    initCustomNav();
   </script>
 </section>
