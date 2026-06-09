@@ -10,7 +10,7 @@ interface Props {
 const { cine, className = "h-96" } = Astro.props;
 ---
 
-<section class={`flex max-w-dvw w-full overflow-hidden rounded-2xl shadow-md border border-gray-200 ${className}`}>
+<section class={`flex max-w-dvw w-full overflow-hidden rounded-2xl shadow-md border border-gray-200 ${className}`} style="min-height: 384px;">
   {cine.mapUrl ? (
     <iframe 
       src={cine.mapUrl} 
@@ -20,6 +20,7 @@ const { cine, className = "h-96" } = Astro.props;
       allowfullscreen="" 
       loading="lazy" 
       referrerpolicy="no-referrer-when-downgrade"
+      title={`Mapa de ubicación de ${cine.nombre}`}
       class="grayscale-[20%] contrast-[1.1]"
     ></iframe>
   ) : (
