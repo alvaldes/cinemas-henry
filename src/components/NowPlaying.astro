@@ -67,6 +67,23 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
 
       const swiper = swiperEl.swiper;
 
+      const updateButtons = () => {
+        // prevBtn visible only if not at the first slide
+        if (prevBtn) {
+          prevBtn.style.display = swiper.isBeginning ? 'none' : 'block';
+        }
+        // nextBtn visible only if not at the last slide
+        if (nextBtn) {
+          nextBtn.style.display = swiper.isEnd ? 'none' : 'block';
+        }
+      };
+
+      // Listen for slide change to update button visibility
+      swiperEl.addEventListener('swiperslidechange', updateButtons);
+      
+      // Initial check
+      updateButtons();
+
       prevBtn.addEventListener('click', () => swiper.slidePrev());
       nextBtn.addEventListener('click', () => swiper.slideNext());
     }
