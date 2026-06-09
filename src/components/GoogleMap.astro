@@ -1,0 +1,30 @@
+---
+// src/components/GoogleMap.astro
+import type { Cine } from "../lib/types";
+
+interface Props {
+  cine: Cine;
+  className?: string;
+}
+
+const { cine, className = "h-96" } = Astro.props;
+---
+
+<section class={`flex max-w-dvw w-full overflow-hidden rounded-2xl shadow-md border border-gray-200 ${className}`}>
+  {cine.mapUrl ? (
+    <iframe 
+      src={cine.mapUrl} 
+      width="100%" 
+      height="100%" 
+      style="border:0;" 
+      allowfullscreen="" 
+      loading="lazy" 
+      referrerpolicy="no-referrer-when-downgrade"
+      class="grayscale-[20%] contrast-[1.1]"
+    ></iframe>
+  ) : (
+    <div class="flex items-center justify-center h-full bg-gray-100 text-gray-500 p-4 text-center">
+      <p>Mapa no disponible para este cine</p>
+    </div>
+  )}
+</section>

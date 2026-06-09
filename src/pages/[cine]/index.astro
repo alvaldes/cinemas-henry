@@ -4,7 +4,9 @@ import Button from '@/components/Button.astro';
 import MainLayout from '@/layouts/main.astro';
 import TrailerGallery from '@/components/TrailerGallery.astro';
 import NowPlaying from '@/components/NowPlaying.astro';
+import GoogleMap from '@/components/GoogleMap.astro';
 
+import { defaultCines } from '@/lib/constants';
 import { normalizeDate, parseDate } from '@/lib/utils'; // Import your date utility functions
 import type { Movie } from '@/lib/types'
 
@@ -12,6 +14,8 @@ export const prerender = false;
 
 const { cine } = Astro.params;
 const today = normalizeDate(new Date()); // Normaliza la fecha actual
+
+const cineData = defaultCines.find(c => c.value === cine);
 
 const movies = await fetch(`${Astro.url.origin}/api/peliculas/${cine}.json`).then((response) => {
   if (!response.ok) {
@@ -39,9 +43,10 @@ const upNext: Movie[] = movies.filter((movie: Movie) => {
 ---
 
 <MainLayout content={{ title: 'Henry Cinemas' }}>
-  <div class="container mx-auto grid">
+  <div class="container mx-auto px-4 py-8 flex flex-col gap-8">
     {upNext.length > 0 && <TrailerGallery videos={upNext} />}
     <NowPlaying movies={nowPlaying} />
+    <GoogleMap cine={cineData} className="w-full md:h-80" />
   </div>
 </MainLayout>
 
