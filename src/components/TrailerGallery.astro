@@ -12,7 +12,7 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
 
 <section class="my-8 mx-auto flex flex-col w-full bg-background text-white">
   <!-- Main Swiper Slider -->
-  <div class="max-w-dvw w-11/12 lg:w-full items-center justify-center">
+  <div class="max-w-dvw w-full items-center justify-center">
     <swiper-container 
       navigation="false" 
       thumbs-swiper=".mySwiper2"
@@ -27,7 +27,7 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
             autoload
             autopause
             posterquality="maxresdefault"
-          class="w-10/12 h-auto ml-8 rounded-lg overflow-hidden"
+          class="w-full h-auto ml-8 rounded-lg overflow-hidden"
           ></lite-youtube>
           <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-0 w-full max-w-dvw">
             <a href={`/${cine}/${encodeURIComponent(video.id)}`} class="inline-block cursor-pointer relative group overflow-hidden rounded">
