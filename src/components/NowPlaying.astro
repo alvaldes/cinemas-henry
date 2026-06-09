@@ -46,11 +46,15 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
       slides-per-view="auto"
       breakpoints='{"320": {"spaceBetween": 16}, "640": {"spaceBetween": 24}, "1024": {"spaceBetween": 32}}'
     >
-      {movies.map((movie: Movie) => (
-        <swiper-slide class="!w-auto px-1">
-          <MovieCard movie={movie} cine={cine} />
-        </swiper-slide>
-      ))}
+    {movies.map((movie: Movie, index) => (
+      <swiper-slide class="!w-auto px-1">
+        <MovieCard 
+          movie={movie} 
+          cine={cine} 
+          isFirst={index === 0} 
+        />
+      </swiper-slide>
+    ))}
     </swiper-container>
   </div>
 
