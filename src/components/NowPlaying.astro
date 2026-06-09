@@ -21,11 +21,11 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
     </h2>
   </div>
 
-  <div class="relative group">
+  <div class="relative group/nav">
     <!-- Custom Floating Navigation -->
     <button 
       id="swiper-prev" 
-      class="absolute left-[-30px] top-1/2 -translate-y-1/2 z-50 p-2 bg-yellow-400 text-black rounded-full shadow-xl hover:bg-yellow-300 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+      class="absolute left-[-30px] top-1/2 -translate-y-1/2 z-50 p-2 bg-yellow-400 text-black rounded-full shadow-xl hover:bg-yellow-300 transition-all opacity-0 group-hover/nav:opacity-100 hidden md:block"
       aria-label="Previous slide"
     >
       <ChevronRight class="h-6 w-6 rotate-180" />
@@ -33,7 +33,7 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
 
     <button 
       id="swiper-next" 
-      class="absolute right-[-30px] top-1/2 -translate-y-1/2 z-50 p-2 bg-yellow-400 text-black rounded-full shadow-xl hover:bg-yellow-300 transition-all opacity-0 group-hover:opacity-100 hidden md:block"
+      class="absolute right-[-30px] top-1/2 -translate-y-1/2 z-50 p-2 bg-yellow-400 text-black rounded-full shadow-xl hover:bg-yellow-300 transition-all opacity-0 group-hover/nav:opacity-100 hidden md:block"
       aria-label="Next slide"
     >
       <ChevronRight class="h-6 w-6" />
