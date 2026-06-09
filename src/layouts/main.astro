@@ -1,6 +1,7 @@
 ---
 import Navbar from '@/components/Navbar.astro';
 import '../styles/global.css';
+import 'swiper/css';
 import Footer from '@/components/Footer.astro';
 const { content } = Astro.props;
 import { ClientRouter } from "astro:transitions";
@@ -10,19 +11,16 @@ import { ClientRouter } from "astro:transitions";
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={content.description || "Disfruta de las mejores películas en Henry Cinemas. Consulta nuestra cartelera y horarios."} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{content.title}</title>
 		<ClientRouter />
-		<script>
-			// Load lite-youtube once globally to avoid "already defined" errors during View Transitions
-			import('https://esm.sh/@justinribeiro/lite-youtube');
-		</script>
 	</head>
 	<body>
     <Navbar/>
-    <div class="mx-auto max-w-dvw px-4 md:px-6 flex-1 w-full">
+    <main class="mx-auto max-w-dvw px-4 md:px-6 flex-1 w-full">
       <slot />
-    </div>
+    </main>
     <Footer/>
 	</body>
 </html>

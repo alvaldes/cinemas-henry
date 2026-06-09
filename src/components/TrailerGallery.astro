@@ -5,7 +5,6 @@ import { Expand } from '@lucide/astro';
 import { formatDuration } from '@/lib/utils';
 import IconFavoriteButton from '@/components/IconFavoriteButton';
 import { Image } from 'astro:assets';
-import 'swiper/css';
 
 const { videos } = Astro.props as { videos: Movie[] };
 const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
