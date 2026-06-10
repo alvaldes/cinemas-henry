@@ -65,7 +65,7 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
   </style>
 
   <script>
-    async function initCustomNav() {
+    function initCustomNav() {
       const scrollContainer = document.querySelector('#now-playing-scroll');
       const prevBtn = document.querySelector('#swiper-prev');
       const nextBtn = document.querySelector('#swiper-next');
@@ -74,12 +74,27 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
 
       const scrollAmount = 300;
 
+      function updateButtons() {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+        const atStart = scrollLeft <= 2;
+        const atEnd = Math.abs(scrollLeft + clientWidth - scrollWidth) <= 2;
+        const needsScroll = scrollWidth > clientWidth;
+
+        prevBtn.style.display = (!atStart && needsScroll) ? '' : 'none';
+        nextBtn.style.display = (!atEnd && needsScroll) ? '' : 'none';
+      }
+
       prevBtn.addEventListener('click', () => {
         scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
       });
       nextBtn.addEventListener('click', () => {
         scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
       });
+
+      scrollContainer.addEventListener('scroll', updateButtons);
+      window.addEventListener('resize', updateButtons);
+
+      updateButtons();
     }
 
     document.addEventListener('DOMContentLoaded', initCustomNav);
