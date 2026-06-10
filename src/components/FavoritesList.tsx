@@ -77,6 +77,16 @@ export default function FavoritesList() {
               ...prev,
               [cine]: { loading: false, error: null, movies: map },
             }));
+
+            // Auto-remove stale favorites no longer in the cine's movie list
+            const group = groups.find((g) => g.cine === cine);
+            if (group) {
+              for (const fav of group.items) {
+                if (!map.has(fav.movieId)) {
+                  removeFavorite(fav.cine, fav.movieId);
+                }
+              }
+            }
           } catch (err) {
             if (cancelled) return;
             setState((prev) => ({

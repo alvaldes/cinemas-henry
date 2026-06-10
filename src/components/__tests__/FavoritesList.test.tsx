@@ -3,20 +3,39 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import FavoritesList from "../FavoritesList";
 import { $favorites, clearFavorites } from "@/lib/stores/favorites";
+import type { Movie } from "@/lib/types";
+
+function mockMovie(id: string): Movie {
+	return {
+		id,
+		title: `Movie ${id}`,
+		duration: "2h",
+		genre: "Action",
+		classification: "A",
+		billboard: "1",
+		trailer: "https://youtube.com/watch?v=test",
+		director: "Director",
+		actors: "Actor 1",
+		synopsis: "Synopsis",
+		type: "pelicula",
+		img_primary: `/img/${id}.jpg`,
+		releaseDate: "2026-01-01",
+		showtimes: [],
+	};
+}
 
 beforeEach(() => {
 	clearFavorites();
 	localStorage.clear();
 
-	// Override global.fetch to return empty arrays so the component does
-	// not attempt real HTTP requests during tests. Each cine gets an empty
-	// movie list, which means all favorites render as "No disponible" cards
-	// — enough to test the clear-all button.
+	// FavoritesList now auto-removes stale favorites after fetching. The mock
+	// must return movies matching the favorites set in each test, otherwise
+	// the cleanup code will remove them and break the test assertions.
 	global.fetch = vi.fn(() =>
 		Promise.resolve({
 			ok: true,
 			status: 200,
-			json: () => Promise.resolve([]),
+			json: () => Promise.resolve([mockMovie("1"), mockMovie("2")]),
 		}),
 	) as any;
 });
@@ -54,12 +73,13 @@ describe("FavoritesList clear-all button", () => {
 			).not.toBeInTheDocument();
 		});
 
-		// Resolve ALL pending fetches with empty movie lists
+		// Resolve ALL pending fetches with matching movie data so the
+		// auto-cleanup doesn't remove the favorites before we assert.
 		for (const r of resolves) {
 			r({
 				ok: true,
 				status: 200,
-				json: () => Promise.resolve([]),
+				json: () => Promise.resolve([mockMovie("1"), mockMovie("2")]),
 			});
 		}
 
