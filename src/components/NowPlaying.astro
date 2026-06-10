@@ -38,57 +38,48 @@ const cine = Astro.url.pathname.split('/')[1] ?? '';
       <ChevronRight class="h-6 w-6" />
     </button>
 
-    <swiper-container 
-      id="now-playing-swiper"
-      class="mySwiper w-full"
-      navigation="false"
-      space-between="24"
-      slides-per-view="auto"
-      breakpoints='{"320": {"spaceBetween": 16}, "640": {"spaceBetween": 24}, "1024": {"spaceBetween": 32}}'
+    <div 
+      id="now-playing-scroll"
+      class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar w-full gap-4"
     >
-    {movies.map((movie: Movie, index) => (
-      <swiper-slide class="!w-auto px-1">
-        <MovieCard 
-          movie={movie} 
-          cine={cine} 
-          isFirst={index === 0} 
-        />
-      </swiper-slide>
-    ))}
-    </swiper-container>
+      {movies.map((movie: Movie, index) => (
+        <div class="snap-start shrink-0">
+          <MovieCard 
+            movie={movie} 
+            cine={cine} 
+            isFirst={index === 0} 
+          />
+        </div>
+      ))}
+    </div>
   </div>
 
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+
   <script>
-    import 'swiper/element/bundle';
-    
     async function initCustomNav() {
-      const swiperEl = document.querySelector('#now-playing-swiper');
+      const scrollContainer = document.querySelector('#now-playing-scroll');
       const prevBtn = document.querySelector('#swiper-prev');
       const nextBtn = document.querySelector('#swiper-next');
 
-      if (!swiperEl || !prevBtn || !nextBtn) return;
+      if (!scrollContainer || !prevBtn || !nextBtn) return;
 
-      const swiper = swiperEl.swiper;
+      const scrollAmount = 300;
 
-      const updateButtons = () => {
-        // prevBtn visible only if not at the first slide
-        if (prevBtn) {
-          prevBtn.style.display = swiper.isBeginning ? 'none' : 'block';
-        }
-        // nextBtn visible only if not at the last slide
-        if (nextBtn) {
-          nextBtn.style.display = swiper.isEnd ? 'none' : 'block';
-        }
-      };
-
-      // Listen for slide change to update button visibility
-      swiperEl.addEventListener('swiperslidechange', updateButtons);
-      
-      // Initial check
-      updateButtons();
-
-      prevBtn.addEventListener('click', () => swiper.slidePrev());
-      nextBtn.addEventListener('click', () => swiper.slideNext());
+      prevBtn.addEventListener('click', () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
     }
 
     document.addEventListener('DOMContentLoaded', initCustomNav);

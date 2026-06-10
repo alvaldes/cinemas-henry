@@ -1,5 +1,4 @@
 ---
-import "@/styles/swiper.css";
 import type { Movie } from "@/lib/types";
 import { Expand } from '@lucide/astro';
 import { formatDuration } from '@/lib/utils';
@@ -11,69 +10,52 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
 ---
 
 <section class="my-8 mx-auto flex flex-col w-full bg-background text-white">
-  <!-- Main Swiper Slider -->
-  <div class="max-w-dvw w-full items-center justify-center">
-    <swiper-container 
-      navigation="false" 
-      thumbs-swiper=".mySwiper2"
-      space-between="40" 
-      slides-per-view="1" 
-      class="mySwiper"
-    >
-      {videos.map((video: Movie, index) => (
-        <swiper-slide class="relative">
-          <div class="aspect-video w-full overflow-hidden rounded-lg">
-            <lite-youtube
-              videoid={video.trailer.split("/").pop()}
-              autoload={index === 0}
-              autopause
-              posterquality="maxresdefault"
-              class="w-full h-full"
-            ></lite-youtube>
-          </div>
-          <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-0 w-full max-w-dvw">
-            <a href={`/${cine}/${encodeURIComponent(video.id)}`} class="inline-block cursor-pointer relative group overflow-hidden rounded">
-              <Image
-                src={video.img_primary}
-                alt={`Poster de ${video.title}`}
-                width={200}
-                height={300}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : "auto"}
-                class="rounded object-cover w-auto h-24 sm:h-48 transition-transform duration-300 group-hover:scale-105"
-              />
-              <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded">
-                <Expand class="h-8 w-8 text-white" />
-              </div>
-            </a>
-            <div
-              class="absolute top-0 left-0 w-7 sm:w-8 h-auto"
-            >
-              <IconFavoriteButton
-                cine={cine}
-                movieId={video.id}
-                client:load
-              />
+  <!-- Main Trailer Carousel -->
+  <div class="max-w-dvw w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar">
+    {videos.map((video: Movie, index) => (
+      <div class="snap-center shrink-0 w-full relative">
+        <div class="aspect-video w-full overflow-hidden rounded-lg">
+          <lite-youtube
+            videoid={video.trailer.split("/").pop()}
+            autoload={index === 0}
+            autopause
+            posterquality="maxresdefault"
+            class="w-full h-full"
+          ></lite-youtube>
+        </div>
+        <div class="absolute bottom-0 left-0 h-auto overflow-hidden bg-gradient-to-t from-background from-10% via-background/80 via-30% to-transparent to-40% p-0 w-full max-w-dvw">
+          <a href={`/${cine}/${encodeURIComponent(video.id)}`} class="inline-block cursor-pointer relative group overflow-hidden rounded">
+            <Image
+              src={video.img_primary}
+              alt={`Poster de ${video.title}`}
+              width={200}
+              height={300}
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchpriority={index === 0 ? "high" : "auto"}
+              class="rounded object-cover w-auto h-24 sm:h-48 transition-transform duration-300 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded">
+              <Expand class="h-8 w-8 text-white" />
             </div>
+          </a>
+          <div class="absolute top-0 left-0 w-7 sm:w-8 h-auto">
+            <IconFavoriteButton
+              cine={cine}
+              movieId={video.id}
+              client:load
+            />
           </div>
-        </swiper-slide>
-      ))}
-    </swiper-container>
+        </div>
+      </div>
+    ))}
   </div>
 
   <!-- Up Next as Synchronized Thumbnails -->
-  <div class="w-12/12 max-w-dvw h-auto mx-0 mt-1">
+  <div class="w-full max-w-dvw h-auto mx-0 mt-1">
     <h3 class="text-yellow-500 font-semibold mb-4">Próximos Estrenos</h3>
-    <swiper-container
-      class="mySwiper2"
-      direction="horizontal"
-      slides-per-view="1.5"
-      free-mode="true"
-      watch-slides-progress="true"
-      breakpoints='{"640": {"slidesPerView": 2}, "768": {"slidesPerView": 5}}'
-    >
+    <div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4">
       {videos.map((video: Movie) => (
-        <swiper-slide class="opacity-40">
+        <div class="snap-start shrink-0 opacity-40 hover:opacity-100 transition-opacity">
           <div class="flex space-x-2 cursor-pointer hover:bg-white/10 p-2 rounded">
             <Image 
               src={video.img_primary} 
@@ -87,20 +69,25 @@ const cine = Astro.url.pathname.split('/')[1]; // Extract cine from URL
               <p class="font-bold text-sm capitalize">{video.title}</p>
             </div>
           </div>
-        </swiper-slide>
+        </div>
       ))}
-    </swiper-container>
+    </div>
   </div>
 </section>
 
 <style>
   lite-youtube {
-    /* No Shadow */
     --lite-youtube-frame-shadow-visible: no;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 </style>
 
 <script>
-  import 'swiper/element/bundle';
   import '@justinribeiro/lite-youtube';
 </script>
