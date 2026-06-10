@@ -10,7 +10,7 @@ interface Props {
 const { cine, className = "h-96" } = Astro.props;
 ---
 
-<section class={`flex max-w-dvw w-full overflow-hidden rounded-2xl shadow-md border border-gray-200 ${className}`} style="min-height: 384px;">
+<section class={`flex max-w-dvw w-full overflow-hidden rounded-2xl shadow-md border border-gray-200 ${className}`} style="min-height: 144px;">
   {cine.mapUrl ? (
     <iframe 
       src={cine.mapUrl} 
